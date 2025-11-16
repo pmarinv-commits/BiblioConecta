@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioconecta · Portal Alumno</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --gradient-start: #2c3e50;
+            --gradient-mid: #87ceeb;
+            --gradient-end: #d4b896;
+            --card-border: rgba(255, 255, 255, 0.35);
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --accent-blue: #2596be;
+            --accent-dark: #2c3e50;
+        }
+        body {
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-mid) 50%, var(--gradient-end) 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 25s ease infinite;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .glass-card {
+            background: var(--card-bg);
+            border-radius: 18px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(16px);
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 65px rgba(0, 0, 0, 0.25);
+        }
+        .institutional-bar {
+            background: #ffffff;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        .branding-bar {
+            background: linear-gradient(90deg, #2c5f7f 0%, #4a8fb8 100%);
+            color: #fff;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+        }
+        .branding-bar i {
+            font-size: 1.8rem;
+        }
+        .menu-button {
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            background: transparent;
+            color: #fff;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+        .menu-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+        .avatar-circle {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f0ad4e, #f7c873);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 600;
+        }
+        .book-card {
+            background: linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(37, 150, 190, 0.8), rgba(212, 184, 150, 0.75));
+            border-radius: 18px;
+            padding: 18px;
+            color: #fff;
+            margin-bottom: 18px;
+            box-shadow: 0 18px 40px rgba(37, 150, 190, 0.35);
+            display: flex;
+            gap: 1.5rem;
+            align-items: stretch;
+        }
+        .book-card .badge {
+            background: rgba(255, 255, 255, 0.22);
+            border: 1px solid transparent;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .book-card-cover {
+            flex: 0 0 120px;
+            border-radius: 14px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+        }
+        .book-card-cover img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+        }
+        .book-card-cover.placeholder {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+        }
+        .book-card-cover.placeholder img {
+            opacity: 0.85;
+            mix-blend-mode: screen;
+        }
+        .book-card-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .book-card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .progress-pill {
+            border-radius: 999px;
+            padding: 0.25rem 0.9rem;
+            background: rgba(255, 255, 255, 0.18);
+            font-size: 0.8rem;
+        }
+        .book-card-description {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+            display: -webkit-box;
+            line-clamp: 3;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .book-card-description.expanded {
+            line-clamp: unset;
+            -webkit-line-clamp: unset;
+            max-height: none;
+        }
+        .book-card-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: auto;
+        }
+        .book-card-actions .btn-outline-light-alt {
+            padding: 0.5rem 1.5rem;
+        }
+        .btn-ghost-light {
+            border-radius: 999px;
+            border: 2px solid rgba(255, 255, 255, 0.65);
+            background: transparent;
+            color: #fff;
+            font-weight: 600;
+            padding: 0.45rem 1.25rem;
+            transition: background 0.2s ease;
+        }
+        .btn-ghost-light:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+        }
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--accent-dark), var(--accent-blue));
+            border: none;
+            color: #fff;
+            border-radius: 999px;
+            padding: 12px 24px;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 150, 190, 0.35);
+            color: #fff;
+        }
+        .btn-outline-light-alt {
+            border-radius: 999px;
+            padding: 12px 24px;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            color: #fff;
+            font-weight: 600;
+            background: transparent;
+            transition: background 0.2s ease;
+        }
+        .btn-outline-light-alt:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+        .notification-item {
+            padding: 14px 16px;
+            border-left: 4px solid var(--accent-blue);
+            border-radius: 12px;
+            background: rgba(37, 150, 190, 0.12);
+            margin-bottom: 12px;
+        }
+        .list-section + .list-section {
+            margin-top: 1.5rem;
+        }
+        .list-books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 1.5rem;
+        }
+        .reading-feed {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 0.75rem;
+        }
+        .list-header small {
+            color: #6c757d;
+        }
+        @media (max-width: 992px) {
+            .login-dropdown {
+                margin-top: 15px;
+            }
+            .list-books-grid {
+                grid-template-columns: 1fr;
+            }
+            .book-card {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px;
+            }
+            .book-card-cover {
+                flex: 0 0 auto;
+                width: 200px;
+                height: auto;
+                margin: 0 auto 1rem;
+            }
+            .book-card-cover img {
+                height: auto;
+            }
+            .book-card-meta,
+            .book-card-actions {
+                justify-content: center;
+            }
+        }
+        @media (max-width: 576px) {
+            .book-card {
+                flex-direction: column;
+                text-align: left;
+            }
+            .book-card-cover {
+                width: 100%;
+                height: 200px;
+            }
+            .book-card-cover img {
+                height: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra Biblioconecta -->
+    <section class="branding-bar py-3">
+        <div class="container-fluid px-4 d-flex flex-wrap align-items-center gap-3 justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+                <div class="dropdown">
+                    <button class="menu-button dropdown-toggle" id="statsMenuBtn" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Abrir menú principal">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end shadow border-0 p-3" aria-labelledby="statsMenuBtn">
+                        <p class="text-muted small mb-2">Accesos rápidos</p>
+                        <button type="button" class="btn btn-outline-primary w-100 mb-2" data-action="view-stats">
+                            <i class="bi bi-graph-up me-2"></i>Ver estadísticas
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary w-100" data-action="view-highlights">
+                            <i class="bi bi-highlighter me-2"></i>Mis subrayados
+                        </button>
+                    </div>
+                </div>
+                <i class="bi bi-book"></i>
+                <div>
+                    <div class="fw-bold fs-5">Biblioconecta</div>
+                    <div class="text-white-50 small">Plan Lector Digital - Acceso libre a recursos académicos</div>
+                </div>
+            </div>
+            <div class="dropdown login-dropdown ms-auto">
+                <button class="btn btn-link text-white text-decoration-none dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                    <span class="text-white-50">Bienvenid@</span>
+                    <span class="fw-bold text-uppercase" id="studentName">JUAN PÉREZ</span>
+                    <span class="avatar-circle" id="studentAvatar">J</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="#" data-action="logout"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <main class="container py-5">
+        <div class="row g-4">
+            <!-- Columna Lecturas -->
+            <div class="col-12 reading-feed">
+                <article class="glass-card p-4">
+                    <header class="mb-3">
+                        <h5 class="mb-0"><i class="bi bi-journal-text text-primary me-2"></i>Lecturas asignadas</h5>
+                        <small class="text-muted">Disfruta tus libros digitales y haz clic en "Leer" para abrir el lector.</small>
+                    </header>
+                    <div id="listasAsignadas" class="d-flex flex-column gap-4"></div>
+                    <p class="text-muted mb-0" data-empty="listas" hidden>Aún no tienes lecturas digitales disponibles.</p>
+                </article>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Modal de estadísticas -->
+    <div class="modal fade" id="statsModal" tabindex="-1" aria-labelledby="statsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow border-0">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="statsModalLabel"><i class="bi bi-graph-up me-2"></i>Estadísticas actuales</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small mb-4">Este resumen refleja tu progreso dentro de Biblioconecta.</p>
+                    <div class="row g-3 text-center">
+                        <div class="col-6">
+                            <div class="p-3 rounded bg-light">
+                                <div class="h3 mb-0" data-modal-stat="lecturasActivas">0</div>
+                                <small class="text-muted">Lecturas activas</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 rounded bg-light">
+                                <div class="h3 mb-0" data-modal-stat="librosPorLeer">0</div>
+                                <small class="text-muted">Libros por leer</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 rounded bg-light">
+                                <div class="h3 mb-0" data-modal-stat="librosLeidos">0</div>
+                                <small class="text-muted">Libros leídos</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 rounded bg-light">
+                                <div class="h3 mb-0" data-modal-stat="subrayados">0</div>
+                                <small class="text-muted">Subrayados</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de subrayados -->
+    <div class="modal fade" id="highlightsModal" tabindex="-1" aria-labelledby="highlightsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="highlightsModalLabel"><i class="bi bi-highlighter me-2"></i>Mis subrayados</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small">Revisa los fragmentos importantes que has marcado en tus lecturas.</p>
+                    <div id="highlightsList" class="d-flex flex-column gap-3"></div>
+                    <p class="text-muted mb-0" id="highlightsEmpty" hidden>Aún no tienes subrayados guardados.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de detalles de libro -->
+    <div class="modal fade" id="bookDetailsModal" tabindex="-1" aria-labelledby="bookDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <div>
+                        <p class="text-uppercase text-muted small mb-1">Ficha del libro</p>
+                        <h5 class="modal-title" id="bookDetailsModalLabel">Título del libro</h5>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <img src="" alt="Portada" class="img-fluid rounded-4 shadow-sm" id="bookDetailsCover">
+                        </div>
+                        <div class="col-md-8">
+                            <ul class="list-unstyled mb-3">
+                                <li class="mb-2"><strong>Autor:</strong> <span id="bookDetailsAuthor">—</span></li>
+                                <li class="mb-2"><strong>Fecha de publicación:</strong> <span id="bookDetailsDate">—</span></li>
+                                <li class="mb-2"><strong>Género:</strong> <span id="bookDetailsGenre">—</span></li>
+                                <li class="mb-2"><strong>Formato:</strong> <span class="badge rounded-pill text-bg-light" id="bookDetailsType">—</span></li>
+                            </ul>
+                            <p class="text-muted" id="bookDetailsSummary">Sin descripción disponible.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // =======================================
+        //  Hooks para inyectar datos dinámicos
+        // =======================================
+        // Reemplaza este bloque con tus fetch/axios y loops.
+        const DASHBOARD_ENDPOINT = '/api/student/dashboard';
+        const FALLBACK_COVER = '/public/assets/book_placeholder.svg';
+        const sampleData = {
+            estudiante: {
+                nombre: 'Juan Pérez',
+                curso: '3° Medio B'
+            },
+            stats: {
+                lecturasActivas: 0,
+                librosPorLeer: 12,
+                librosLeidos: 4,
+                subrayados: 28
+            },
+            subrayados: [
+                {
+                    id: 1,
+                    libro: 'El principito',
+                    pagina: 24,
+                    nota: '“Lo esencial es invisible a los ojos”. Recordar para la reflexión final.',
+                    fecha: '2025-11-12T09:24:00Z'
+                },
+                {
+                    id: 2,
+                    libro: '1984',
+                    pagina: 138,
+                    nota: 'Concepto de doblepensar explicado en detalle.',
+                    fecha: '2025-11-10T18:02:00Z'
+                }
+            ],
+            listas: [
+                {
+                    id: 'demo',
+                    nombre: 'Plan lector demostración',
+                    descripcion: 'Ejemplo de cómo se mostrarán tus lecturas asignadas.',
+                    curso: '3° Medio B',
+                    libros: [
+                        {
+                            id: 101,
+                            titulo: 'El principito',
+                            autor: 'Antoine de Saint-Exupéry',
+                            genero: 'Narrativa',
+                            descripcion: 'Un clásico sobre la amistad y la imaginación.',
+                            progreso: 45,
+                            portada: '/public/assets/book_placeholder.svg',
+                            pdf: '/uploads/demo/el-principito.pdf'
+                        },
+                        {
+                            id: 102,
+                            titulo: '1984',
+                            autor: 'George Orwell',
+                            genero: 'Distopía',
+                            descripcion: 'Vigilia constante del Gran Hermano.',
+                            progreso: 10,
+                            portada: '',
+                            pdf: ''
+                        }
+                    ]
+                }
+            ]
+        };
+
+        const PROGRESS_KEY = 'readingProgress';
+        const CURRENT_BOOK_KEY = 'currentReading';
+        const statsModalElement = document.getElementById('statsModal');
+        const highlightsModalElement = document.getElementById('highlightsModal');
+        const bookDetailsModalElement = document.getElementById('bookDetailsModal');
+        const highlightsListElement = document.getElementById('highlightsList');
+        const highlightsEmptyElement = document.getElementById('highlightsEmpty');
+        const bookDetailsRefs = bookDetailsModalElement ? {
+            title: document.getElementById('bookDetailsModalLabel'),
+            cover: document.getElementById('bookDetailsCover'),
+            author: document.getElementById('bookDetailsAuthor'),
+            date: document.getElementById('bookDetailsDate'),
+            genre: document.getElementById('bookDetailsGenre'),
+            type: document.getElementById('bookDetailsType'),
+            summary: document.getElementById('bookDetailsSummary')
+        } : null;
+        let statsModalInstance = null;
+        let highlightsModalInstance = null;
+        let bookDetailsModalInstance = null;
+        if (statsModalElement && typeof bootstrap !== 'undefined') {
+            statsModalInstance = new bootstrap.Modal(statsModalElement);
+        }
+        if (highlightsModalElement && typeof bootstrap !== 'undefined') {
+            highlightsModalInstance = new bootstrap.Modal(highlightsModalElement);
+        }
+        if (bookDetailsModalElement && typeof bootstrap !== 'undefined') {
+            bookDetailsModalInstance = new bootstrap.Modal(bookDetailsModalElement);
+        }
+        document.querySelectorAll('[data-action="view-stats"]').forEach(node => {
+            node.addEventListener('click', () => {
+                statsModalInstance?.show();
+            });
+        });
+        document.querySelectorAll('[data-action="view-highlights"]').forEach(node => {
+            node.addEventListener('click', () => {
+                highlightsModalInstance?.show();
+            });
+        });
+
+        function formatDateLabel(value) {
+            if (!value) return 'Sin información';
+            const parsed = new Date(value);
+            if (Number.isNaN(parsed.getTime())) {
+                return value;
+            }
+            return parsed.toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        function populateBookDetailsModal(book) {
+            if (!bookDetailsRefs) return;
+            const coverUrl = getBookCover(book);
+            bookDetailsRefs.cover.src = coverUrl;
+            bookDetailsRefs.cover.alt = `Portada de ${book.titulo || 'libro'}`;
+            if ('decoding' in bookDetailsRefs.cover) {
+                bookDetailsRefs.cover.decoding = 'async';
+            }
+            if ('loading' in bookDetailsRefs.cover) {
+                bookDetailsRefs.cover.loading = 'lazy';
+            }
+            bookDetailsRefs.title.textContent = book.titulo || 'Libro sin título';
+            bookDetailsRefs.author.textContent = book.autor || 'Autor no especificado';
+            bookDetailsRefs.date.textContent = formatDateLabel(book.fecha_publicacion) || 'Sin información';
+            bookDetailsRefs.genre.textContent = book.genero || 'General';
+            bookDetailsRefs.type.textContent = (book.tipo || 'digital').toUpperCase();
+            bookDetailsRefs.summary.textContent = book.descripcion || 'No hay descripción disponible para este libro.';
+        }
+
+        function openBookDetails(bookId) {
+            const numericId = Number(bookId);
+            const book = window.__bookIndex?.[numericId];
+            if (!book) {
+                alert('No se encontró información del libro seleccionado.');
+                return;
+            }
+            populateBookDetailsModal(book);
+            bookDetailsModalInstance?.show();
+        }
+        window.openBookDetails = openBookDetails;
+
+        function loadProgressMap() {
+            try {
+                return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {};
+            } catch (err) {
+                console.warn('No se pudo leer el progreso almacenado', err);
+                return {};
+            }
+        }
+
+        function persistCurrentBook(book) {
+            const normalized = { ...book, id: Number(book.id) };
+            localStorage.setItem(CURRENT_BOOK_KEY, JSON.stringify(normalized));
+        }
+
+        function hydrateBookIndexFromProgress(progressMap = {}) {
+            const index = {};
+            Object.entries(progressMap).forEach(([key, entry]) => {
+                const bookData = entry?.book;
+                const numericId = Number(bookData?.id || key);
+                if (numericId && bookData) {
+                    index[numericId] = {
+                        ...bookData,
+                        id: numericId
+                    };
+                }
+            });
+            return index;
+        }
+
+        function mergeBooksFromLists(lists = [], baseIndex = {}) {
+            const merged = { ...baseIndex };
+            lists.forEach(lista => {
+                (lista.libros || []).forEach(libro => {
+                    const numericId = Number(libro?.id);
+                    if (!numericId || !isDigitalBook(libro)) return;
+                    merged[numericId] = {
+                        ...libro,
+                        id: numericId,
+                        portada: resolveMediaPath(libro.portada) || '',
+                        pdf: resolveMediaPath(libro.pdf) || ''
+                    };
+                });
+            });
+            return merged;
+        }
+
+        function resolveMediaPath(value) {
+            if (!value || typeof value !== 'string') return '';
+            const trimmed = value.trim();
+            if (!trimmed) return '';
+            if (/^(https?:)?\/\//i.test(trimmed) || trimmed.startsWith('data:')) {
+                return trimmed;
+            }
+            if (trimmed.startsWith('/')) {
+                return trimmed;
+            }
+            return `/${trimmed.replace(/^\/+/, '')}`;
+        }
+
+        function isDigitalBook(libro = {}) {
+            return ((libro.tipo || 'digital').toLowerCase() === 'digital');
+        }
+
+        function filterDigitalLists(lists = []) {
+            return lists
+                .map(lista => {
+                    const digitales = (lista.libros || []).filter(isDigitalBook);
+                    return { ...lista, libros: digitales };
+                })
+                .filter(lista => lista.libros.length);
+        }
+
+        function getBookCover(libro = {}) {
+            const coverCandidate = resolveMediaPath(libro.portada) || resolveMediaPath(libro.cover);
+            return coverCandidate || FALLBACK_COVER;
+        }
+
+        function createBookCard(libro = {}) {
+            const normalizedId = Number(libro?.id);
+            const book = {
+                ...libro,
+                portada: resolveMediaPath(libro.portada) || '',
+                pdf: resolveMediaPath(libro.pdf) || '',
+                id: normalizedId || libro.id
+            };
+            const card = document.createElement('div');
+            card.className = 'book-card';
+
+            const coverWrapper = document.createElement('div');
+            coverWrapper.className = 'book-card-cover';
+            const hasUploadedCover = Boolean(book.portada);
+            const coverImg = document.createElement('img');
+            const coverUrl = hasUploadedCover ? book.portada : getBookCover(book);
+            coverImg.src = coverUrl;
+            coverImg.alt = `Portada de ${book.titulo || 'libro'}`;
+            coverImg.loading = 'lazy';
+            coverImg.decoding = 'async';
+            if (!hasUploadedCover) {
+                coverWrapper.classList.add('placeholder');
+            }
+            coverWrapper.appendChild(coverImg);
+            card.appendChild(coverWrapper);
+
+            const body = document.createElement('div');
+            body.className = 'book-card-body';
+
+            const meta = document.createElement('div');
+            meta.className = 'book-card-meta';
+            const badge = document.createElement('span');
+            badge.className = 'badge';
+            badge.textContent = book.genero || 'General';
+            const progressValue = typeof book.progreso === 'number' ? Math.max(0, Math.min(100, book.progreso)) : 0;
+            const progressPill = document.createElement('span');
+            progressPill.className = 'progress-pill';
+            progressPill.textContent = `Avance ${progressValue}%`;
+            meta.appendChild(badge);
+            meta.appendChild(progressPill);
+            body.appendChild(meta);
+
+            const title = document.createElement('h6');
+            title.className = 'mb-1';
+            title.textContent = book.titulo || 'Libro asignado';
+            const author = document.createElement('small');
+            author.className = 'text-white-50 d-block';
+            author.textContent = book.autor ? `Autor: ${book.autor}` : 'Autor no disponible';
+            body.appendChild(title);
+            body.appendChild(author);
+
+            if (book.descripcion) {
+                const desc = document.createElement('p');
+                desc.className = 'book-card-description';
+                desc.textContent = book.descripcion;
+                body.appendChild(desc);
+            }
+
+            const actions = document.createElement('div');
+            actions.className = 'book-card-actions';
+            const readBtn = document.createElement('button');
+            readBtn.type = 'button';
+            readBtn.className = 'btn btn-outline-light-alt btn-sm';
+            const hasPdf = Boolean(book.pdf);
+            readBtn.textContent = hasPdf ? 'Leer ahora' : 'PDF no disponible';
+            readBtn.disabled = !hasPdf;
+            if (hasPdf) {
+                readBtn.addEventListener('click', () => leerLibro(book.id));
+            } else {
+                readBtn.title = 'Aún no hay PDF asociado a este libro.';
+            }
+            actions.appendChild(readBtn);
+
+            const detailsBtn = document.createElement('button');
+            detailsBtn.type = 'button';
+            detailsBtn.className = 'btn btn-ghost-light btn-sm';
+            detailsBtn.textContent = 'Ver detalles';
+            detailsBtn.addEventListener('click', () => openBookDetails(book.id));
+            actions.appendChild(detailsBtn);
+
+            body.appendChild(actions);
+            card.appendChild(body);
+            return card;
+        }
+
+        function renderAssignedLists(lists = []) {
+            const container = document.getElementById('listasAsignadas');
+            const emptyState = document.querySelector('[data-empty="listas"]');
+            if (!container) return;
+            container.innerHTML = '';
+            const validLists = lists.filter(lista => Array.isArray(lista.libros) && lista.libros.length);
+            if (!validLists.length) {
+                if (emptyState) emptyState.hidden = false;
+                return;
+            }
+            if (emptyState) emptyState.hidden = true;
+            validLists.forEach(lista => {
+                const section = document.createElement('section');
+                section.className = 'list-section';
+
+                const header = document.createElement('div');
+                header.className = 'list-header';
+                const infoWrapper = document.createElement('div');
+                const title = document.createElement('h6');
+                title.className = 'mb-1';
+                title.textContent = lista.nombre || 'Lista asignada';
+                const description = document.createElement('p');
+                description.className = 'text-muted small mb-0';
+                description.textContent = lista.descripcion || 'Lecturas asignadas por tu docente.';
+                infoWrapper.appendChild(title);
+                infoWrapper.appendChild(description);
+                const count = document.createElement('small');
+                count.textContent = `${lista.libros.length} libro${lista.libros.length === 1 ? '' : 's'}`;
+                header.appendChild(infoWrapper);
+                header.appendChild(count);
+                section.appendChild(header);
+
+                const cardsGrid = document.createElement('div');
+                cardsGrid.className = 'list-books-grid';
+                lista.libros.forEach(libro => {
+                    const wrapper = document.createElement('div');
+                    wrapper.appendChild(createBookCard(libro));
+                    cardsGrid.appendChild(wrapper);
+                });
+                section.appendChild(cardsGrid);
+
+                container.appendChild(section);
+            });
+        }
+
+        function renderPortal(data) {
+            window.__studentData = data;
+            const savedProgress = loadProgressMap();
+            const lists = filterDigitalLists(Array.isArray(data.listas) ? data.listas : []);
+            const baseIndex = hydrateBookIndexFromProgress(savedProgress);
+            window.__bookIndex = mergeBooksFromLists(lists, baseIndex);
+            document.getElementById('studentName').textContent = data.estudiante.nombre.toUpperCase();
+            document.getElementById('studentAvatar').textContent = data.estudiante.nombre.charAt(0).toUpperCase();
+            const cursoBadge = document.querySelector('[data-placeholder="curso"]');
+            if (cursoBadge) cursoBadge.textContent = data.estudiante.curso || 'Sin curso';
+
+            updateStats(data.stats || {});
+            updateHighlights(Array.isArray(data.subrayados) ? data.subrayados : []);
+            renderAssignedLists(lists);
+            consumePendingPortalBook();
+        }
+
+        function updateStats(stats) {
+            updateStatsModal(stats);
+        }
+
+        function updateHighlights(entries = []) {
+            if (!highlightsListElement || !highlightsEmptyElement) return;
+            highlightsListElement.innerHTML = '';
+            if (!entries.length) {
+                highlightsEmptyElement.hidden = false;
+                return;
+            }
+            highlightsEmptyElement.hidden = true;
+            entries.forEach(item => {
+                const card = document.createElement('article');
+                card.className = 'border rounded-4 p-3 shadow-sm bg-light';
+                const title = document.createElement('h6');
+                title.className = 'mb-1';
+                title.textContent = item.libro || 'Lectura';
+                const meta = document.createElement('small');
+                const pageLabel = item.pagina ? `Página ${item.pagina}` : 'Página no registrada';
+                const dateLabel = item.fecha ? new Date(item.fecha).toLocaleString('es-CL') : '';
+                meta.className = 'text-muted d-block mb-2';
+                meta.textContent = dateLabel ? `${pageLabel} · ${dateLabel}` : pageLabel;
+                const note = document.createElement('p');
+                note.className = 'mb-0';
+                note.textContent = item.nota || 'Subrayado sin descripción.';
+                card.appendChild(title);
+                card.appendChild(meta);
+                card.appendChild(note);
+                highlightsListElement.appendChild(card);
+            });
+        }
+
+        function updateStatsModal(stats) {
+            const defaults = {
+                lecturasActivas: 0,
+                librosPorLeer: 0,
+                librosLeidos: 0,
+                subrayados: 0
+            };
+            const merged = { ...defaults, ...stats };
+            const modalFields = document.querySelectorAll('[data-modal-stat]');
+            modalFields.forEach(field => {
+                const key = field.getAttribute('data-modal-stat');
+                if (!key) return;
+                field.textContent = merged[key] ?? 0;
+            });
+        }
+
+        function consumePendingPortalBook() {
+            const pendingRaw = localStorage.getItem('pendingPortalBookId');
+            if (!pendingRaw) return;
+            localStorage.removeItem('pendingPortalBookId');
+            const pendingId = Number(pendingRaw);
+            if (!pendingId) return;
+            setTimeout(() => leerLibro(pendingId), 200);
+        }
+
+        // Funciones solicitadas
+        async function leerLibro(id) {
+            const numericId = Number(id) || id;
+            let book = window.__bookIndex?.[numericId];
+            if (!book) {
+                try {
+                    const response = await fetch(`/api/libros/${numericId}`);
+                    if (response.ok) {
+                        book = await response.json();
+                    }
+                } catch (error) {
+                    console.warn('No se pudo recuperar el libro desde la API', error);
+                }
+            }
+            if (!book) {
+                alert('No se encontró información del libro seleccionado.');
+                return;
+            }
+            const normalizedBook = {
+                ...book,
+                id: Number(book.id) || Number(numericId),
+                pdf: resolveMediaPath(book.pdf)
+            };
+            persistCurrentBook(normalizedBook);
+            window.location.href = `/lector_pdf.html?bookId=${normalizedBook.id}`;
+        }
+        window.leerLibro = leerLibro;
+        function irACatalogo() {
+            window.location.href = '/catalogo.html';
+        }
+        function verProgreso() {
+            alert('Mostrar modal o dashboard de progreso.');
+        }
+        function misSubrayados() {
+            if (highlightsModalInstance) {
+                highlightsModalInstance.show();
+            } else {
+                alert('Tus subrayados aparecerán aquí cuando el modal esté disponible.');
+            }
+        }
+        function logout(event) {
+            event?.preventDefault();
+            localStorage.removeItem('token');
+            localStorage.removeItem(CURRENT_BOOK_KEY);
+            localStorage.removeItem(PROGRESS_KEY);
+            localStorage.removeItem('pendingPortalBookId');
+            window.location.href = '/catalogo.html';
+        }
+
+        document.querySelectorAll('[data-action="logout"]').forEach(node => {
+            node.addEventListener('click', logout);
+        });
+
+        async function bootstrapStudentPortal() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                renderPortal(sampleData);
+                return;
+            }
+            try {
+                const response = await fetch(DASHBOARD_ENDPOINT, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Respuesta inválida');
+                const payload = await response.json();
+                renderPortal(payload);
+            } catch (err) {
+                console.warn('No se pudo cargar el portal dinámico. Usando datos de demostración.', err);
+                renderPortal(sampleData);
+            }
+        }
+
+        bootstrapStudentPortal();
+    </script>
+</body>
+</html>

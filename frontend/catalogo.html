@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Biblioconecta · Plan Lector Digital</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    :root {
+      --hero-gradient-start: #2596be;
+      --hero-gradient-end: #87ceeb;
+      --capsule-start: #e7dcc8;
+      --capsule-end: #a9b7c4;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+      background-color: #f4f7fb;
+      color: #0f2942;
+      min-height: 100vh;
+    }
+
+    .hero-nav {
+      position: sticky;
+      top: 0;
+      z-index: 1020;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 10px 30px rgba(15, 41, 66, 0.08);
+    }
+
+    .hero-nav .logo-pill {
+      width: 50px;
+      height: 50px;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0f5c7f, #37b8de);
+      color: #fff;
+      font-size: 1.6rem;
+      box-shadow: 0 10px 25px rgba(16, 90, 126, 0.35);
+    }
+
+    .hero-stage {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--hero-gradient-start), var(--hero-gradient-end));
+      color: #fff;
+      border-bottom-left-radius: 40px;
+      border-bottom-right-radius: 40px;
+      padding: 5rem 0 6rem;
+    }
+
+    .hero-stage::after {
+      content: "";
+      position: absolute;
+      right: -15%;
+      top: -5%;
+      width: 55vw;
+      height: 55vw;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.35), transparent 60%),
+        linear-gradient(120deg, var(--capsule-start), var(--capsule-end));
+      border-radius: 45% 55% 60% 40%;
+      opacity: 0.75;
+      filter: blur(0.5px);
+      transform: rotate(-8deg);
+      pointer-events: none;
+    }
+
+    .hero-stage .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-eyebrow {
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.75);
+    }
+
+    .hero-stage h1 {
+      font-size: clamp(2.5rem, 4vw, 3.8rem);
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .hero-stage p {
+      font-size: 1.05rem;
+      max-width: 520px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .hero-login-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 28px;
+      padding: 2rem;
+      box-shadow: 0 30px 60px rgba(7, 30, 58, 0.25);
+      backdrop-filter: blur(6px);
+      transition: transform 280ms ease, box-shadow 280ms ease;
+    }
+
+    .hero-login-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 40px 70px rgba(7, 30, 58, 0.28);
+    }
+
+    .google-divider {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+    }
+
+    .google-divider::before,
+    .google-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(148, 163, 184, 0.4);
+    }
+
+    .google-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(15, 23, 42, 0.12);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      padding: 0.85rem 1rem;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .google-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 35px rgba(15, 23, 42, 0.15);
+    }
+
+    .form-control,
+    .form-control:focus,
+    .form-select {
+      background-color: #f4f7fb;
+      border: 1px solid rgba(15, 41, 66, 0.1);
+      border-radius: 16px;
+      padding: 0.9rem 1.1rem;
+      font-size: 0.95rem;
+      box-shadow: none;
+    }
+
+    .btn-gradient {
+      background: linear-gradient(120deg, #1f6ea9, #5fe1ff);
+      border: none;
+      border-radius: 999px;
+      color: #0f2942;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      padding: 0.85rem 1.5rem;
+      text-transform: uppercase;
+      box-shadow: 0 14px 35px rgba(31, 110, 169, 0.45);
+      transition: transform 200ms ease, box-shadow 200ms ease;
+    }
+
+    .btn-gradient:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 45px rgba(31, 110, 169, 0.5);
+    }
+
+    .catalog-panel {
+      border-radius: 28px;
+      padding: 2rem;
+    }
+
+    .catalog-panel .input-group-text {
+      border-radius: 16px 0 0 16px;
+      background: #fff;
+      border: 1px solid rgba(15, 41, 66, 0.1);
+      border-right: 0;
+    }
+
+    .catalog-panel .form-control {
+      border-radius: 0 16px 16px 0;
+      border-left: 0;
+    }
+
+    .chip-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(15, 41, 66, 0.15);
+      padding: 0.5rem 1.1rem;
+      background: #fff;
+      transition: all 180ms ease;
+    }
+
+    .chip-btn.active,
+    .chip-btn:hover {
+      background: #e9f6ff;
+      border-color: #1f6ea9;
+      color: #1f6ea9;
+      box-shadow: 0 8px 20px rgba(31, 110, 169, 0.15);
+    }
+
+    .alert-info-soft {
+      background: rgba(117, 187, 229, 0.2);
+      border: 1px solid rgba(38, 150, 190, 0.2);
+      color: #0f4b70;
+      border-radius: 18px;
+    }
+
+    .catalog-card {
+      border: none;
+      border-radius: 22px;
+      box-shadow: 0 18px 45px rgba(15, 41, 66, 0.08);
+      transition: transform 220ms ease, box-shadow 220ms ease;
+      height: 100%;
+    }
+
+    .catalog-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 25px 55px rgba(15, 41, 66, 0.12);
+    }
+
+    .catalog-card img {
+      border-radius: 18px;
+      object-fit: cover;
+      height: 220px;
+      width: 100%;
+    }
+
+    .catalog-card .badge {
+      font-weight: 500;
+    }
+
+    .welcome-card {
+      border-radius: 24px;
+      background: #fff;
+      box-shadow: 0 25px 55px rgba(15, 41, 66, 0.12);
+      border: 1px solid rgba(15, 41, 66, 0.06);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .welcome-card img {
+      border-radius: 18px;
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+    }
+
+    .welcome-card .card-body {
+      flex: 1;
+    }
+
+    @media (max-width: 992px) {
+      .hero-stage {
+        padding-top: 4rem;
+      }
+      .hero-stage::after {
+        width: 80vw;
+        height: 80vw;
+        right: -25%;
+        top: 10%;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .hero-login-card {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero-nav py-3">
+    <div class="container d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <span class="logo-pill" aria-hidden="true"><i class="bi bi-book"></i></span>
+        <div class="text-dark">
+          <h1 class="h4 mb-0 fw-bold">Biblioconecta</h1>
+          <p class="mb-0 small text-muted">Plan Lector Digital - Acceso libre a recursos académicos</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero-stage">
+      <div class="container hero-content">
+        <div class="row align-items-center g-5">
+          <div class="col-12 col-lg-6 text-white">
+            <p class="hero-eyebrow mb-2">Bienvenido</p>
+            <h1>Bienvenido</h1>
+            <p class="mb-3">Biblioconecta – Plan Lector Digital abre la puerta para que alumnos y docentes accedan al Plan Lector y a los recursos académicos esenciales desde cualquier dispositivo.</p>
+            <p class="mb-4">Explora colecciones digitales, consulta libros obligatorios gratuitos y mantén al día a tu comunidad educativa con materiales curados por nuestro equipo.</p>
+          </div>
+          <div class="col-12 col-lg-5 offset-lg-1">
+            <div class="hero-login-card text-dark">
+              <div class="d-flex align-items-center gap-2 mb-3">
+                <i class="bi bi-shield-lock text-primary fs-4"></i>
+                <p class="mb-0 fw-semibold text-uppercase small text-muted">Acceso institucional</p>
+              </div>
+              <h2 class="h4 fw-bold mb-4">Inicia sesión</h2>
+              <form id="heroLoginForm" class="d-flex flex-column gap-3">
+                <div>
+                  <label for="heroEmail" class="form-label text-muted small mb-1">Correo institucional</label>
+                  <input type="email" id="heroEmail" name="email" class="form-control" placeholder="btolozaa@alumnos.ceduc.cl" autocomplete="email" required />
+                </div>
+                <div>
+                  <label for="heroPassword" class="form-label text-muted small mb-1">Contraseña</label>
+                  <div class="position-relative">
+                    <input type="password" id="heroPassword" name="password" class="form-control pe-5" placeholder="••••••••" minlength="4" autocomplete="current-password" required />
+                    <i class="bi bi-eye-slash position-absolute top-50 end-0 me-3 translate-middle-y text-muted"></i>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-gradient">Aceptar</button>
+                <div class="google-divider"><span>o</span></div>
+                <button type="button" class="google-btn w-100" id="heroGoogleBtn">
+                  <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="18" height="18" />
+                  <span>Continuar con Google</span>
+                </button>
+                <a href="#" class="text-decoration-none text-primary fw-semibold small">¿Olvidó su Contraseña?</a>
+                <p id="loginFeedback" class="small mb-0 text-danger d-none">Correo o contraseña inválidos.</p>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-5 bg-white">
+      <div class="container">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+          <div>
+            <p class="text-uppercase text-muted small mb-1">Catálogo de bienvenida</p>
+            <h2 class="h4 mb-0">Lo último agregado al plan lector</h2>
+          </div>
+          <p class="mb-0 text-muted small">Portadas y PDFs se generan desde el panel del administrador.</p>
+        </div>
+        <div id="welcomeEmpty" class="alert alert-info-soft" role="status" hidden>Aún no hay libros registrados.</div>
+        <div class="row g-4" id="welcomeGrid"></div>
+      </div>
+    </section>
+
+    <section class="py-5">
+      <div class="container">
+        <div class="card shadow-sm border-0 catalog-panel mb-4">
+          <div class="card-body">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+              <div>
+                <p class="text-uppercase text-muted fw-semibold small mb-1">Catálogo</p>
+                <h3 class="h4 mb-0">Explora el material disponible</h3>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button class="chip-btn" type="button" data-filter-type="digital">Digital</button>
+                <button class="chip-btn" type="button" data-filter-type="fisico">Físico</button>
+                <button class="btn btn-outline-secondary rounded-pill" type="button" id="clearFiltersBtn">Limpiar filtros</button>
+              </div>
+            </div>
+            <div class="row g-3 align-items-center">
+              <div class="col-lg-6">
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-funnel"></i></span>
+                  <input type="search" class="form-control" placeholder="Buscar libro, autor o categoría" id="catalogSearch" aria-label="Buscar en el catálogo" />
+                </div>
+              </div>
+              <div class="col-lg-6 text-lg-end">
+                <p class="text-muted small mb-0">Encuentra recursos obligatorios y libros digitales gratuitos.</p>
+              </div>
+            </div>
+            <div id="emptyAlert" class="alert alert-info-soft mt-4 d-none" role="status">No hay libros disponibles en este momento.</div>
+          </div>
+        </div>
+        <div id="grid" class="row g-4"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal fade" id="physicalRequestModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <form class="modal-content" id="requestModalForm">
+        <div class="modal-header">
+          <div>
+            <p class="text-uppercase small text-muted mb-1">Solicitud física</p>
+            <h1 class="modal-title fs-5">Reservar ejemplar</h1>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted small mb-1">Libro seleccionado</p>
+          <h2 class="h5 mb-2" id="requestBookTitle">—</h2>
+          <p class="text-muted small mb-3" id="requestBookType">—</p>
+          <div id="requestModalAlert" class="alert alert-danger d-none" role="alert"></div>
+          <input type="hidden" name="bookId" id="requestBookId" />
+          <div class="mb-3">
+            <label class="form-label">Nombre y apellido</label>
+            <input type="text" class="form-control" name="requesterName" id="requesterNameInput" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">RUT</label>
+            <input type="text" class="form-control" name="requesterRut" id="requesterRutInput" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Número telefónico</label>
+            <input type="tel" class="form-control" name="requesterPhone" id="requesterPhoneInput" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Correo institucional</label>
+            <input type="email" class="form-control" name="requesterEmail" id="requesterEmailInput" required />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="requestSubmitBtn">Enviar solicitud</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal fade" id="bookDescriptionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <div>
+            <p class="text-uppercase text-muted small mb-1">Ficha del libro</p>
+            <h1 class="modal-title fs-4" id="bookDescTitle">Título del libro</h1>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <img src="" alt="Portada" class="img-fluid rounded-4 shadow-sm" id="bookDescCover" />
+            </div>
+            <div class="col-md-8">
+              <ul class="list-unstyled mb-4">
+                <li class="mb-2"><strong>Autor:</strong> <span id="bookDescAuthor">—</span></li>
+                <li class="mb-2"><strong>Fecha de publicación:</strong> <span id="bookDescDate">—</span></li>
+                <li class="mb-2"><strong>Género:</strong> <span id="bookDescGenre">—</span></li>
+                <li class="mb-2"><strong>Formato:</strong> <span class="badge rounded-pill text-bg-light" id="bookDescType">—</span></li>
+              </ul>
+              <p class="text-muted" id="bookDescSummary">Sin descripción disponible.</p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="src/ui.js"></script>
+  <script>
+    const FALLBACK_COVER = '/public/assets/book_placeholder.svg';
+    const DIGITAL_READER_ROLES = ['alumno', 'profesor'];
+    const state = {
+      data: [],
+      fullData: [],
+      activeType: 'digital',
+      isAuthenticated: false,
+      role: null,
+      canReadDigital: false
+    };
+    const sessionManager = window.biblioconectaSession;
+
+    function persistRole(role) {
+      if (role) localStorage.setItem('sessionRole', role);
+    }
+
+    function getStoredRole(token) {
+      const cached = localStorage.getItem('sessionRole');
+      if (cached) return cached;
+      if (token && sessionManager?.decodeRoleFromToken) {
+        const decoded = sessionManager.decodeRoleFromToken(token);
+        if (decoded) {
+          persistRole(decoded);
+          return decoded;
+        }
+      }
+      return null;
+    }
+
+    function updateAuthState(token){
+      const activeToken = token || localStorage.getItem('token');
+      state.isAuthenticated = Boolean(activeToken);
+      state.role = state.isAuthenticated ? getStoredRole(activeToken) : null;
+      if (state.role) persistRole(state.role);
+      state.canReadDigital = state.isAuthenticated && DIGITAL_READER_ROLES.includes(state.role);
+    }
+
+    updateAuthState();
+
+    function handleLoginSuccess(payload){
+      if(!payload || !payload.token) return;
+      updateAuthState(payload.token);
+      if(sessionManager?.completeLogin){
+        sessionManager.completeLogin(payload);
+      } else {
+        localStorage.setItem('token', payload.token);
+        window.location.href = '/portal_alumno_static.html';
+      }
+    }
+
+    function cleanUrlAndPersist(params) {
+      const url = new URL(window.location.href);
+      params.forEach(key => url.searchParams.delete(key));
+      const newQuery = url.searchParams.toString();
+      const cleaned = url.pathname + (newQuery ? `?${newQuery}` : '');
+      window.history.replaceState({}, document.title, cleaned);
+    }
+
+    function bootstrapOAuthToken() {
+      const url = new URL(window.location.href);
+      const token = url.searchParams.get('token');
+      if (token) {
+        cleanUrlAndPersist(['token', 'auth']);
+        handleLoginSuccess({ token });
+        updateAuthState(token);
+        return true;
+      }
+      if (url.searchParams.get('auth') === 'fail') {
+        const feedbackBox = document.getElementById('loginFeedback');
+        if (feedbackBox) {
+          feedbackBox.textContent = 'El inicio de sesión con Google fue cancelado.';
+          feedbackBox.classList.remove('d-none');
+        }
+        cleanUrlAndPersist(['auth']);
+      }
+      return false;
+    }
+
+    async function loadCatalog(initialType = 'digital') {
+      try {
+        const response = await fetch('/api/libros');
+        state.fullData = await response.json();
+      } catch (err) {
+        console.error('Error al cargar el catálogo', err);
+        state.fullData = [];
+      }
+      applyTypeFilter(initialType);
+      renderWelcomeCatalog();
+    }
+
+    function filterDataByType(tipo) {
+      if (!tipo) return [...state.fullData];
+      const normalized = tipo.toLowerCase();
+      return state.fullData.filter(item => (item.tipo || '').toLowerCase() === normalized);
+    }
+
+    function updateActiveFilterButtons(tipo) {
+      document.querySelectorAll('[data-filter-type]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filterType === tipo);
+      });
+    }
+
+    function applyTypeFilter(tipo = '') {
+      state.activeType = tipo;
+      state.data = filterDataByType(tipo);
+      updateActiveFilterButtons(tipo);
+      renderCatalog();
+    }
+
+    function renderCatalog() {
+      const grid = document.getElementById('grid');
+      const emptyAlert = document.getElementById('emptyAlert');
+      const searchValue = (document.getElementById('catalogSearch').value || '').toLowerCase().trim();
+      const filtered = state.data.filter(item => {
+        if (!searchValue) return true;
+        const blob = `${item.titulo || ''} ${item.autor || ''} ${item.descripcion || ''} ${item.genero || ''}`.toLowerCase();
+        return blob.includes(searchValue);
+      });
+
+      grid.innerHTML = '';
+      if (!filtered.length) {
+        emptyAlert.classList.remove('d-none');
+        return;
+      }
+      emptyAlert.classList.add('d-none');
+
+      filtered.forEach(libro => {
+        const col = document.createElement('div');
+        col.className = 'col-12 col-md-6 col-xl-4';
+        col.innerHTML = `
+          <article class="card catalog-card h-100">
+            <img src="${getCover(libro)}" alt="Portada de ${libro.titulo || 'libro'}" class="w-100" />
+            <div class="card-body">
+              <span class="badge bg-light text-dark mb-2 text-uppercase">${(libro.tipo || 'digital')}</span>
+              <h4 class="h5">${libro.titulo || 'Título no disponible'}</h4>
+              <p class="text-muted mb-1">${libro.autor || 'Autor no especificado'}</p>
+              <p class="small text-secondary">${libro.descripcion || ''}</p>
+              ${renderActionButtons(libro, 'outline')}
+            </div>
+          </article>`;
+        grid.appendChild(col);
+      });
+    }
+
+    function renderWelcomeCatalog() {
+      const grid = document.getElementById('welcomeGrid');
+      const empty = document.getElementById('welcomeEmpty');
+      if (!grid || !empty) return;
+      const source = state.fullData.length ? state.fullData : state.data;
+      grid.innerHTML = '';
+      if (!source.length) {
+        empty.hidden = false;
+        return;
+      }
+      empty.hidden = true;
+      const latest = source.slice(-4).reverse();
+      latest.forEach(libro => {
+        const col = document.createElement('div');
+        col.className = 'col-12 col-md-6 col-xl-3';
+        col.innerHTML = `
+          <article class="welcome-card h-100 p-3">
+            <img src="${getCover(libro)}" alt="Portada de ${libro.titulo || 'libro'}" />
+            <div class="card-body px-0">
+              <span class="badge bg-light text-dark mb-2 text-uppercase">${libro.tipo || 'digital'}</span>
+              <h3 class="h5">${libro.titulo || 'Sin título'}</h3>
+              <p class="text-muted small mb-2">${libro.autor || 'Autor no especificado'}</p>
+              <p class="small text-secondary">${libro.descripcion || ''}</p>
+              ${renderWelcomeActions(libro)}
+            </div>
+          </article>`;
+        grid.appendChild(col);
+      });
+    }
+
+    function renderActionButtons(libro, variant = 'outline') {
+      const primaryClass = variant === 'solid'
+        ? 'btn btn-primary rounded-pill fw-semibold'
+        : 'btn btn-outline-primary rounded-pill fw-semibold';
+      const descriptionButton = `<button class="${primaryClass}" type="button" onclick="openBookDescription(${libro.id})">Ver descripción</button>`;
+      const normalizedType = (libro.tipo || 'digital').toLowerCase();
+      if (normalizedType === 'fisico') {
+        const requestButton = `<button class="btn btn-warning rounded-pill fw-semibold" onclick="openPhysicalRequest(${libro.id})">Solicitar en físico</button>`;
+        return `<div class="d-flex flex-wrap gap-2">${descriptionButton}${requestButton}</div>`;
+      }
+      if (!state.canReadDigital) {
+        const loginCopy = state.isAuthenticated
+          ? 'Solo alumnos/profesores pueden leer'
+          : 'Inicia sesión para leer';
+        const loginAttrs = state.isAuthenticated
+          ? 'disabled'
+          : 'onclick="promptLoginForDigital()"';
+        const loginButton = `<button class="btn btn-success rounded-pill fw-semibold" type="button" ${loginAttrs}>${loginCopy}</button>`;
+        return `<div class="d-flex flex-wrap gap-2">${descriptionButton}${loginButton}</div>`;
+      }
+      const hasPdf = Boolean(libro.pdf);
+      const readLabel = hasPdf ? 'Leer ahora' : 'PDF no disponible';
+      const readAttrs = hasPdf
+        ? `onclick="redirectToPortal(${libro.id})"`
+        : 'disabled title="Aún no se ha cargado el PDF"';
+      const readButton = `<button class="btn btn-success rounded-pill fw-semibold" type="button" ${readAttrs}>${readLabel}</button>`;
+      return `<div class="d-flex flex-wrap gap-2">${descriptionButton}${readButton}</div>`;
+    }
+
+    function renderWelcomeActions(libro) {
+      const descriptionButton = `<button class="btn btn-primary rounded-pill fw-semibold" type="button" onclick="openBookDescription(${libro.id})">Ver descripción</button>`;
+      return `<div class="d-flex flex-wrap gap-2">${descriptionButton}</div>`;
+    }
+
+    function resolveMediaPath(value) {
+      if (!value || typeof value !== 'string') return '';
+      const trimmed = value.trim();
+      if (!trimmed) return '';
+      if (/^(https?:)?\/\//i.test(trimmed) || trimmed.startsWith('data:')) {
+        return trimmed;
+      }
+      if (trimmed.startsWith('/')) {
+        return trimmed;
+      }
+      return `/${trimmed.replace(/^\/+/, '')}`;
+    }
+
+    function getCover(libro) {
+      return resolveMediaPath(libro.portada) || FALLBACK_COVER;
+    }
+
+    function promptLoginForDigital(requireRole = false) {
+      const message = requireRole
+        ? 'Solo alumnos o profesores autenticados pueden abrir libros digitales. Inicia sesión con tu cuenta institucional.'
+        : 'Inicia sesión con tu cuenta institucional y abre los libros digitales desde tu portal del alumno.';
+      alert(message);
+      document.getElementById('heroEmail')?.focus();
+    }
+
+    function redirectToPortal(bookId) {
+      if (!state.isAuthenticated || !state.canReadDigital) {
+        promptLoginForDigital(true);
+        return;
+      }
+      if (bookId != null && bookId !== 'null') {
+        localStorage.setItem('pendingPortalBookId', String(bookId));
+      } else {
+        localStorage.removeItem('pendingPortalBookId');
+      }
+      window.location.href = '/portal_alumno_static.html';
+    }
+
+    const bookDescriptionModalEl = document.getElementById('bookDescriptionModal');
+    const bookDescriptionModal = bookDescriptionModalEl ? new bootstrap.Modal(bookDescriptionModalEl) : null;
+    const bookDescRefs = bookDescriptionModalEl ? {
+      cover: document.getElementById('bookDescCover'),
+      title: document.getElementById('bookDescTitle'),
+      author: document.getElementById('bookDescAuthor'),
+      date: document.getElementById('bookDescDate'),
+      genre: document.getElementById('bookDescGenre'),
+      type: document.getElementById('bookDescType'),
+      summary: document.getElementById('bookDescSummary')
+    } : null;
+
+    function openBookDescription(bookId) {
+      const book = findBookById(bookId);
+      if (!book) {
+        alert('No se encontró información del libro seleccionado.');
+        return;
+      }
+      if (!bookDescRefs) return;
+      bookDescRefs.cover.src = getCover(book);
+      bookDescRefs.cover.alt = `Portada de ${book.titulo || 'libro'}`;
+      bookDescRefs.title.textContent = book.titulo || 'Libro sin título';
+      bookDescRefs.author.textContent = book.autor || 'Autor no especificado';
+      bookDescRefs.date.textContent = book.fecha_publicacion || 'Sin información';
+      bookDescRefs.genre.textContent = book.genero || 'General';
+      bookDescRefs.type.textContent = (book.tipo || 'digital').toUpperCase();
+      bookDescRefs.summary.textContent = book.descripcion || 'No hay descripción disponible para este libro.';
+      bookDescriptionModal?.show();
+    }
+
+    function openPhysicalRequest(bookId) {
+      const book = findBookById(bookId);
+      if (!book) {
+        alert('No se encontró información del libro.');
+        return;
+      }
+      if (window.catalogRequestUI && typeof window.catalogRequestUI.open === 'function') {
+        window.catalogRequestUI.open(book);
+      }
+    }
+
+    function findBookById(id) {
+      const numericId = Number(id);
+      return state.data.find(b => Number(b.id) === numericId) || state.fullData.find(b => Number(b.id) === numericId);
+    }
+
+    const heroGoogleBtn = document.getElementById('heroGoogleBtn');
+    if (heroGoogleBtn) {
+      heroGoogleBtn.addEventListener('click', () => {
+        window.location.href = '/api/auth/google';
+      });
+    }
+
+    document.getElementById('catalogSearch').addEventListener('input', () => renderCatalog());
+    document.getElementById('clearFiltersBtn').addEventListener('click', () => {
+      document.getElementById('catalogSearch').value = '';
+      applyTypeFilter('');
+    });
+    document.querySelectorAll('[data-filter-type]').forEach(btn => btn.addEventListener('click', () => applyTypeFilter(btn.dataset.filterType)));
+
+    const loginForm = document.getElementById('heroLoginForm');
+    const feedback = document.getElementById('loginFeedback');
+    bootstrapOAuthToken();
+    loginForm.addEventListener('submit', async event => {
+      event.preventDefault();
+      feedback.classList.add('d-none');
+      const email = document.getElementById('heroEmail').value.trim();
+      const password = document.getElementById('heroPassword').value;
+      if (!email || !password) {
+        feedback.textContent = 'Complete ambos campos.';
+        feedback.classList.remove('d-none');
+        return;
+      }
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        if (!res.ok) throw new Error('Credenciales inválidas');
+        const payload = await res.json();
+        handleLoginSuccess(payload);
+      } catch (err) {
+        feedback.textContent = 'Correo o contraseña inválidos.';
+        feedback.classList.remove('d-none');
+      }
+    });
+
+    loadCatalog('digital');
+  </script>
+</body>
+</html>

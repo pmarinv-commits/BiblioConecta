@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Biblioconecta · Acceso Administrador</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #142952, #050914 60%);
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .auth-card {
+      background: rgba(255, 255, 255, 0.97);
+      border-radius: 28px;
+      box-shadow: 0 40px 80px rgba(10, 18, 40, 0.35);
+      max-width: 480px;
+      width: 100%;
+      padding: 2.5rem;
+    }
+    .brand-circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb, #38bdf8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+    }
+    .form-control {
+      border-radius: 14px;
+      padding: 0.85rem 1rem;
+      border: 1px solid rgba(15, 23, 42, 0.12);
+    }
+    .btn-pill {
+      border-radius: 999px;
+      padding: 0.9rem 1.5rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .google-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(15, 23, 42, 0.15);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      padding: 0.85rem 1rem;
+    }
+    .alert-placeholder {
+      min-height: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-card">
+    <div class="brand-circle">
+      <i class="bi bi-shield-lock"></i>
+    </div>
+    <p class="text-uppercase small text-muted mb-1">Acceso restringido</p>
+    <h1 class="h3 fw-bold mb-4">Panel de administración</h1>
+    <div class="alert-placeholder" id="adminAlert"></div>
+    <form id="adminLoginForm" class="mb-4">
+      <div class="mb-3">
+        <label class="form-label">Correo institucional</label>
+        <input type="email" class="form-control" name="email" required placeholder="admin@institucion.cl" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Contraseña</label>
+        <input type="password" class="form-control" name="password" required />
+      </div>
+      <button class="btn btn-primary btn-pill w-100" type="submit">
+        <span class="fw-semibold">Ingresar</span>
+      </button>
+    </form>
+    <div class="d-flex align-items-center mb-3">
+      <div class="flex-grow-1 border-top"></div>
+      <span class="px-3 text-muted small">o</span>
+      <div class="flex-grow-1 border-top"></div>
+    </div>
+    <button class="google-btn w-100" id="googleButton" type="button">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="18" height="18" />
+      <span>Continuar con Google</span>
+    </button>
+    <p class="text-center text-muted small mt-4 mb-0">Esta puerta es exclusiva para administradores autorizados.</p>
+  </div>
+
+  <script>
+    const ADMIN_TOKEN_KEY = 'admin_token';
+
+    function buildPanelUrl() {
+      const origin = window.location.origin && window.location.origin !== 'null'
+        ? window.location.origin
+        : '';
+      return origin ? `${origin}/admin_panel.html` : 'admin_panel.html';
+    }
+
+    function redirectToPanel(token) {
+      if (!token) return;
+      localStorage.setItem(ADMIN_TOKEN_KEY, token);
+      window.location.href = buildPanelUrl();
+    }
+
+    (function bootstrapTokenFromUrl() {
+      const searchParams = new URLSearchParams(window.location.search);
+      const hash = window.location.hash.replace(/^#/, '');
+      const hashParams = new URLSearchParams(hash);
+      const token = searchParams.get('token') || hashParams.get('token');
+      if (token) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('token');
+        url.hash = '';
+        const cleaned = url.pathname + (url.searchParams.toString() ? `?${url.searchParams.toString()}` : '');
+        window.history.replaceState({}, document.title, cleaned);
+        redirectToPanel(token);
+      }
+    })();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const adminForm = document.getElementById('adminLoginForm');
+      const alertBox = document.getElementById('adminAlert');
+      const googleBtn = document.getElementById('googleButton');
+      if (!adminForm || !alertBox || !googleBtn) return;
+
+      adminForm.setAttribute('action', 'javascript:void(0);');
+      adminForm.setAttribute('novalidate', 'novalidate');
+
+      adminForm.addEventListener('submit', async event => {
+        event.preventDefault();
+        alertBox.innerHTML = '';
+        const data = Object.fromEntries(new FormData(adminForm).entries());
+        try {
+          const res = await fetch('/api/admin/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+          const payload = await res.json();
+          if (!res.ok) {
+            throw new Error(payload.error || 'No se pudo autenticar');
+          }
+          redirectToPanel(payload.token);
+        } catch (error) {
+          alertBox.innerHTML = `<div class="alert alert-danger" role="alert">${error.message}</div>`;
+        }
+      });
+
+      googleBtn.addEventListener('click', () => {
+        window.location.href = '/api/admin/auth/google';
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<svg width="320" height="480" viewBox="0 0 320 480" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="coverGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2c3e50" />
+      <stop offset="55%" stop-color="#2596be" />
+      <stop offset="100%" stop-color="#d4b896" />
+    </linearGradient>
+    <linearGradient id="spineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.55)" />
+      <stop offset="100%" stop-color="rgba(255,255,255,0.0)" />
+    </linearGradient>
+  </defs>
+  <rect width="320" height="480" rx="32" fill="url(#coverGradient)" />
+  <rect x="30" y="40" width="36" height="400" rx="12" fill="url(#spineGradient)" />
+  <rect x="80" y="120" width="200" height="24" rx="12" fill="rgba(255,255,255,0.45)" />
+  <rect x="80" y="170" width="160" height="16" rx="8" fill="rgba(255,255,255,0.35)" />
+  <rect x="80" y="210" width="160" height="16" rx="8" fill="rgba(255,255,255,0.25)" />
+  <rect x="80" y="250" width="160" height="16" rx="8" fill="rgba(255,255,255,0.25)" />
+  <rect x="80" y="320" width="160" height="90" rx="18" fill="rgba(0,0,0,0.15)" />
+</svg>

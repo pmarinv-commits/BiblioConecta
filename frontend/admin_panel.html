@@ -1,0 +1,1019 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Biblioconecta · Panel del Administrador</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    :root {
+      --gradient: linear-gradient(120deg, #152b5a, #2d7dd2, #38cfd9);
+      --surface: rgba(255, 255, 255, 0.95);
+      --muted: #6b7280;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+      min-height: 100vh;
+      background: #f4f6fb;
+      color: #0f172a;
+    }
+
+    .admin-hero {
+      background: var(--gradient);
+      color: #fff;
+      border-bottom-left-radius: 40px;
+      border-bottom-right-radius: 40px;
+      padding: 3rem 0;
+      box-shadow: 0 30px 60px rgba(21, 43, 90, 0.25);
+    }
+
+    .stats-card {
+      background: var(--surface);
+      border: none;
+      border-radius: 22px;
+      box-shadow: 0 22px 45px rgba(15, 23, 42, 0.12);
+      padding: 1.8rem;
+    }
+
+    .section-card {
+      background: #fff;
+      border-radius: 26px;
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+      padding: 2rem;
+    }
+
+    .form-control,
+    .form-select {
+      border-radius: 14px;
+      border: 1px solid rgba(15, 23, 42, 0.12);
+      padding: 0.85rem 1rem;
+    }
+
+    .btn-pill {
+      border-radius: 999px;
+      padding: 0.75rem 1.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .table thead th {
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .timeline-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #2563eb;
+      margin-right: 0.5rem;
+    }
+
+    .toast-container {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 1080;
+    }
+
+    .request-row-overdue {
+      background: rgba(220, 53, 69, 0.12);
+    }
+
+    .request-row-overdue td {
+      border-color: rgba(220, 53, 69, 0.2) !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="toast-container" id="toastContainer"></div>
+  <header class="admin-hero">
+    <div class="container">
+      <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-4">
+        <div>
+          <p class="text-uppercase small opacity-75 mb-1">Biblioconecta</p>
+          <h1 class="display-5 fw-bold mb-2">Panel del Administrador</h1>
+          <p class="mb-0">Gestiona libros, usuarios y solicitudes en un solo lugar.</p>
+        </div>
+        <div class="text-lg-end">
+          <button class="btn btn-outline-light btn-pill" onclick="logoutAdmin()"><i class="bi bi-box-arrow-left me-2"></i>Salir</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container py-5">
+    <div class="row g-3 mb-4" id="statCards">
+      <div class="col-md-3 col-6">
+        <div class="stats-card h-100">
+          <p class="text-uppercase text-muted small mb-1">Libros</p>
+          <h2 class="fw-bold" data-role="stat-books">0</h2>
+          <p class="text-muted mb-0">Registrados</p>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stats-card h-100">
+          <p class="text-uppercase text-muted small mb-1">Usuarios</p>
+          <h2 class="fw-bold" data-role="stat-users">0</h2>
+          <p class="text-muted mb-0">Activos</p>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stats-card h-100">
+          <p class="text-uppercase text-muted small mb-1">Solicitudes</p>
+          <h2 class="fw-bold" data-role="stat-requests">0</h2>
+          <p class="text-muted mb-0">Pendientes</p>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stats-card h-100">
+          <p class="text-uppercase text-muted small mb-1">Alertas</p>
+          <h2 class="fw-bold" data-role="stat-overdue">0</h2>
+          <p class="text-muted mb-0">Retrasos</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+      <div class="col-lg-7">
+        <section class="section-card">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <p class="text-uppercase text-muted small mb-1">Nuevo recurso</p>
+              <h2 class="h4 mb-0">Agregar libro</h2>
+              <p class="text-muted small mb-0" id="bookFormModeHint">Completa los campos para agregar nuevos títulos.</p>
+            </div>
+            <span class="badge text-bg-primary">Catálogo</span>
+          </div>
+          <form class="row g-3" id="bookForm">
+            <div class="col-md-6">
+              <label class="form-label">Título</label>
+              <input type="text" class="form-control" name="titulo" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Autor</label>
+              <input type="text" class="form-control" name="autor" required />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Género</label>
+              <select class="form-select" name="genero" required>
+                <option value="novela">Novela</option>
+                <option value="cuento">Cuento</option>
+                <option value="ensayo">Ensayo</option>
+                <option value="poesia">Poesía</option>
+                <option value="otros">Otros</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Tipo</label>
+              <select class="form-select" name="tipo" required>
+                <option value="digital">Digital</option>
+                <option value="fisico">Físico</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Fecha de publicación</label>
+              <input type="text" class="form-control" name="fecha_publicacion" placeholder="1998" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Descripción corta</label>
+              <input type="text" class="form-control" name="descripcion" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Portada (jpg/png)</label>
+              <input type="file" class="form-control" name="portada" accept="image/*" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">PDF</label>
+              <input type="file" class="form-control" name="pdf" accept="application/pdf" />
+            </div>
+            <div class="col-12 d-flex justify-content-end gap-2">
+              <button class="btn btn-outline-secondary btn-pill d-none" type="button" id="cancelBookEditBtn"><i class="bi bi-x-circle me-2"></i>Cancelar</button>
+              <button class="btn btn-primary btn-pill" type="submit" data-role="book-submit"><i class="bi bi-plus-circle me-2"></i>Guardar libro</button>
+            </div>
+          </form>
+        </section>
+      </div>
+      <div class="col-lg-5">
+        <section class="section-card h-100">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <p class="text-uppercase text-muted small mb-1">Equipo</p>
+              <h2 class="h4 mb-0">Crear usuario</h2>
+            </div>
+            <span class="badge text-bg-success">Usuarios</span>
+          </div>
+          <form class="row g-3" id="userForm">
+            <div class="col-12">
+              <label class="form-label">Nombre</label>
+              <input type="text" class="form-control" name="nombre" required />
+            </div>
+            <div class="col-12">
+              <label class="form-label">RUT</label>
+              <input type="text" class="form-control" name="rut" required />
+            </div>
+            <div class="col-12">
+              <label class="form-label">Correo</label>
+              <input type="email" class="form-control" name="email" required />
+            </div>
+            <div class="col-12">
+              <label class="form-label">Rol</label>
+              <select class="form-select" name="role" required>
+                <option value="alumno">Alumno</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <div class="col-12 text-end">
+              <button class="btn btn-outline-primary btn-pill" type="submit"><i class="bi bi-person-plus me-2"></i>Crear usuario</button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+      <div class="col-lg-8">
+        <section class="section-card">
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+            <div>
+              <p class="text-uppercase text-muted small mb-1">Solicitudes</p>
+              <h2 class="h4 mb-0">Gestión de préstamos físicos</h2>
+            </div>
+            <span class="badge text-bg-warning" data-role="requests-badge">0 pendientes</span>
+          </div>
+          <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-4">
+            <div class="d-flex flex-wrap align-items-center gap-2">
+              <label for="requestFilterSelect" class="form-label small mb-0 text-muted">Filtro:</label>
+              <select id="requestFilterSelect" class="form-select form-select-sm" style="max-width:220px">
+                <option value="all" selected>Todos los préstamos</option>
+                <option value="pending-delivery">Pendientes por entregar</option>
+              </select>
+            </div>
+            <button class="btn btn-outline-secondary btn-sm" id="exportOverdueBtn" type="button">
+              <i class="bi bi-file-earmark-arrow-down me-1"></i>Exportar vencidos (CSV)
+            </button>
+          </div>
+          <ul class="nav nav-pills gap-2" id="requestsTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="tab-pending-pill" data-bs-toggle="pill" data-bs-target="#tab-pending" type="button" role="tab">Nuevas solicitudes</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="tab-approved-pill" data-bs-toggle="pill" data-bs-target="#tab-approved" type="button" role="tab">Solicitudes aprobadas</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="tab-history-pill" data-bs-toggle="pill" data-bs-target="#tab-history" type="button" role="tab">Historial</button>
+            </li>
+          </ul>
+          <div class="tab-content mt-4">
+            <div class="tab-pane fade show active" id="tab-pending" role="tabpanel" aria-labelledby="tab-pending-pill">
+              <div class="table-responsive">
+                <table class="table align-middle">
+                  <thead>
+                    <tr>
+                      <th>Título del libro</th>
+                      <th>Nombre</th>
+                      <th>RUT</th>
+                      <th>Teléfono</th>
+                      <th>Fecha solicitud</th>
+                      <th class="text-end">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="pendingRequestsBody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="tab-approved" role="tabpanel" aria-labelledby="tab-approved-pill">
+              <div class="table-responsive">
+                <table class="table align-middle">
+                  <thead>
+                    <tr>
+                      <th>Título</th>
+                      <th>Nombre</th>
+                      <th>RUT</th>
+                      <th>Teléfono</th>
+                      <th>Fecha solicitud</th>
+                      <th>Fecha devolución</th>
+                      <th class="text-end">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="approvedRequestsBody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="tab-history" role="tabpanel" aria-labelledby="tab-history-pill">
+              <div class="table-responsive">
+                <table class="table align-middle">
+                  <thead>
+                    <tr>
+                      <th>Título</th>
+                      <th>Nombre</th>
+                      <th>RUT</th>
+                      <th>Teléfono</th>
+                      <th>Fecha solicitud</th>
+                      <th>Fecha devolución</th>
+                      <th>Estado final</th>
+                      <th class="text-end">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="historyRequestsBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="col-lg-4">
+        <section class="section-card h-100">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <p class="text-uppercase text-muted small mb-1">Alertas</p>
+              <h2 class="h5 mb-0">Préstamos vencidos</h2>
+            </div>
+          </div>
+          <ul class="list-group" id="overdueList"></ul>
+        </section>
+      </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+      <div class="col-lg-7">
+        <section class="section-card">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <p class="text-uppercase text-muted small mb-1">Catálogo</p>
+              <h2 class="h4 mb-0">Últimos libros añadidos</h2>
+            </div>
+          </div>
+          <div class="row g-3" id="booksGrid"></div>
+        </section>
+      </div>
+      <div class="col-lg-5">
+        <section class="section-card h-100">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <p class="text-uppercase text-muted small mb-1">Actividad</p>
+              <h2 class="h4 mb-0">Bitácora</h2>
+            </div>
+          </div>
+          <div class="list-group list-group-flush" id="logList"></div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal fade" id="approveModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <form class="modal-content" id="approveForm">
+        <div class="modal-header">
+          <div>
+            <p class="text-uppercase text-muted small mb-1">Aprobación de préstamo</p>
+            <h2 class="h5 mb-0">Definir fecha de devolución</h2>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-3 small text-muted">Selecciona la fecha límite en la que el ejemplar debe ser devuelto. Este campo es obligatorio.</p>
+          <label class="form-label">Fecha de devolución</label>
+          <input type="date" class="form-control" id="dueDateInput" name="due_date" required />
+          <div class="invalid-feedback">La fecha de devolución es obligatoria.</div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Confirmar aprobación</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const ADMIN_TOKEN_KEY = 'admin_token';
+
+    function buildLoginUrl() {
+      const origin = window.location.origin && window.location.origin !== 'null'
+        ? window.location.origin
+        : '';
+      return origin ? `${origin}/admin_login.html` : 'admin_login.html';
+    }
+
+    const adminToken = localStorage.getItem(ADMIN_TOKEN_KEY);
+    if (!adminToken) {
+      window.location.href = buildLoginUrl();
+    }
+
+    const state = {
+      books: [],
+      users: [],
+      requests: [],
+      logs: [],
+      requestFilter: 'all',
+      buckets: {
+        pending: [],
+        approved: [],
+        history: [],
+        overdue: []
+      }
+    };
+
+    const elements = {
+      stats: {
+        books: document.querySelector('[data-role="stat-books"]'),
+        users: document.querySelector('[data-role="stat-users"]'),
+        requests: document.querySelector('[data-role="stat-requests"]'),
+        overdue: document.querySelector('[data-role="stat-overdue"]')
+      },
+      requestsTables: {
+        pending: document.getElementById('pendingRequestsBody'),
+        approved: document.getElementById('approvedRequestsBody'),
+        history: document.getElementById('historyRequestsBody')
+      },
+      overdueList: document.getElementById('overdueList'),
+      booksGrid: document.getElementById('booksGrid'),
+      logList: document.getElementById('logList'),
+      requestBadge: document.querySelector('[data-role="requests-badge"]'),
+      toastContainer: document.getElementById('toastContainer'),
+      bookForm: document.getElementById('bookForm'),
+      userForm: document.getElementById('userForm'),
+      approveModal: document.getElementById('approveModal'),
+      approveForm: document.getElementById('approveForm'),
+      dueDateInput: document.getElementById('dueDateInput'),
+      requestFilterSelect: document.getElementById('requestFilterSelect'),
+      exportOverdueBtn: document.getElementById('exportOverdueBtn')
+    };
+
+    const bookFormModeHint = document.getElementById('bookFormModeHint');
+    const cancelBookEditBtn = document.getElementById('cancelBookEditBtn');
+    const bookFormSubmitBtn = elements.bookForm ? elements.bookForm.querySelector('[data-role="book-submit"]') : null;
+    let editingBookId = null;
+
+    function escapeHtml(value = '') {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function setBookFormMode(mode, meta = {}) {
+      const isEdit = mode === 'edit';
+      if (bookFormSubmitBtn) {
+        bookFormSubmitBtn.innerHTML = isEdit
+          ? '<i class="bi bi-save me-2"></i>Actualizar libro'
+          : '<i class="bi bi-plus-circle me-2"></i>Guardar libro';
+      }
+      if (bookFormModeHint) {
+        bookFormModeHint.textContent = isEdit
+          ? `Editando "${meta.title || 'Libro'}". Sube una nueva portada o PDF solo si deseas reemplazarlos.`
+          : 'Completa los campos para agregar nuevos títulos.';
+      }
+      if (cancelBookEditBtn) {
+        cancelBookEditBtn.classList.toggle('d-none', !isEdit);
+      }
+    }
+
+    function resetBookForm() {
+      editingBookId = null;
+      elements.bookForm?.reset();
+      setBookFormMode('create');
+    }
+
+    setBookFormMode('create');
+    cancelBookEditBtn?.addEventListener('click', () => {
+      resetBookForm();
+      showToast('Edición cancelada');
+    });
+
+    const approveModalInstance = elements.approveModal ? new bootstrap.Modal(elements.approveModal) : null;
+    let approveTargetId = null;
+
+    function withAuth(options = {}) {
+      const headers = new Headers(options.headers || {});
+      if (adminToken) headers.set('Authorization', `Bearer ${adminToken}`);
+      return { ...options, headers };
+    }
+
+    async function fetchJson(url, options = {}) {
+      const res = await fetch(url, withAuth(options));
+      if (res.status === 401 || res.status === 403) {
+        localStorage.removeItem(ADMIN_TOKEN_KEY);
+        window.location.href = buildLoginUrl();
+        throw new Error('Sesión expirada');
+      }
+      if (!res.ok) {
+        let message = `Error ${res.status} en ${url}`;
+        try {
+          const body = await res.clone().json();
+          message = body?.error || body?.message || message;
+        } catch (e) {
+          try {
+            const text = await res.text();
+            if (text) message = text;
+          } catch (err) {
+            // ignore
+          }
+        }
+        const error = new Error(message);
+        error.status = res.status;
+        throw error;
+      }
+      return res.json();
+    }
+
+    async function loadDashboard() {
+      try {
+        const [books, users, requests, logs] = await Promise.all([
+          fetchJson('/api/libros'),
+          fetchJson('/api/users'),
+          fetchJson('/api/admin/requests'),
+          fetchJson('/api/admin/logs')
+        ]);
+        state.books = books || [];
+        state.users = users || [];
+        state.requests = requests || [];
+        state.logs = logs || [];
+        categorizeRequests();
+        renderStats();
+        renderRequestTables();
+        renderOverdue();
+        renderBooks();
+        renderLogs();
+      } catch (error) {
+        console.error('Error cargando panel', error);
+        showToast('No se pudieron cargar los datos', 'danger');
+      }
+    }
+
+    function renderStats() {
+      elements.stats.books.textContent = state.books.length;
+      elements.stats.users.textContent = state.users.length;
+      const pending = state.buckets.pending.length;
+      elements.stats.requests.textContent = pending;
+      if (elements.requestBadge) elements.requestBadge.textContent = `${pending} pendientes`;
+      elements.stats.overdue.textContent = state.buckets.overdue.length;
+    }
+
+    function categorizeRequests() {
+      const pending = [];
+      const approved = [];
+      const history = [];
+      const overdue = [];
+      (state.requests || []).forEach(req => {
+        const entry = normalizeRequestRecord(req);
+        if (entry.status === 'pendiente') pending.push(entry);
+        else if (entry.status === 'aprobado' || entry.status === 'recogido') approved.push(entry);
+        else history.push(entry);
+        if (isOverdue(entry)) overdue.push(entry);
+      });
+      state.buckets = { pending, approved, history, overdue };
+    }
+
+    function normalizeStatus(value = '') {
+      const lower = (value || '').toLowerCase();
+      if (lower === 'en_proceso') return 'aprobado';
+      if (lower === 'completado') return 'devuelto';
+      return lower || 'pendiente';
+    }
+
+    function normalizeRequestRecord(request = {}) {
+      const status = normalizeStatus(request.status || request.estado);
+      const composedName = request.requester_name || [request.nombre, request.apellido].filter(Boolean).join(' ').trim();
+      return {
+        ...request,
+        status,
+        book_id: request.book_id ?? request.libroId ?? request.bookId ?? null,
+        requester_name: composedName || request.nombre || '—',
+        requester_rut: request.requester_rut || request.rut || '',
+        requester_phone: request.requester_phone || request.celular || request.telefono || '',
+        requester_email: request.requester_email || request.email || '',
+        request_date: request.request_date || request.creado || request.created_at || request.createdAt,
+        due_date: request.due_date || request.devolucion || null
+      };
+    }
+
+    function applyRequestFilter(list = []) {
+      if (state.requestFilter !== 'pending-delivery') return list;
+      return list.filter(item => isPendingDeliveryStatus(item.status));
+    }
+
+    function isPendingDeliveryStatus(status = '') {
+      const normalized = (status || '').toLowerCase();
+      return normalized === 'pendiente' || normalized === 'aprobado' || normalized === 'recogido';
+    }
+
+    function renderRequestTables() {
+      renderPendingTable(state.buckets.pending);
+      renderApprovedTable(state.buckets.approved);
+      renderHistoryTable(state.buckets.history);
+    }
+
+    function renderPendingTable(list) {
+      const target = elements.requestsTables.pending;
+      if (!target) return;
+      const source = applyRequestFilter(list);
+      if (!source.length) {
+        target.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Sin solicitudes pendientes.</td></tr>';
+        return;
+      }
+      target.innerHTML = source.map(req => `
+        <tr>
+          <td>${resolveBookTitle(req)}</td>
+          <td>${req.requester_name || '—'}</td>
+          <td>${req.requester_rut || '—'}</td>
+          <td>${req.requester_phone || '—'}</td>
+          <td>${formatDate(req.request_date)}</td>
+          <td class="text-end">
+            <button class="btn btn-sm btn-success me-2" onclick="openApproveModal(${req.id})">Aprobar</button>
+            <button class="btn btn-sm btn-outline-danger" onclick="updateRequestStatus(${req.id}, 'rechazado')">Rechazar</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderApprovedTable(list) {
+      const target = elements.requestsTables.approved;
+      if (!target) return;
+      const source = applyRequestFilter(list);
+      if (!source.length) {
+        target.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Sin solicitudes aprobadas.</td></tr>';
+        return;
+      }
+      target.innerHTML = source.map(req => {
+        const overdueClass = isOverdue(req) ? 'request-row-overdue' : '';
+        const isApproved = req.status === 'aprobado';
+        return `
+          <tr class="${overdueClass}">
+            <td>${resolveBookTitle(req)}</td>
+            <td>${req.requester_name || '—'}</td>
+            <td>${req.requester_rut || '—'}</td>
+            <td>${req.requester_phone || '—'}</td>
+            <td>${formatDate(req.request_date)}</td>
+            <td>${formatDateOnly(req.due_date)}</td>
+            <td class="text-end">
+              <span class="badge ${statusClass(req.status)} me-2">${formatStatus(req.status)}</span>
+              ${isApproved
+                ? `<button class="btn btn-sm btn-outline-primary" onclick="updateRequestStatus(${req.id}, 'recogido')">Marcar como Recogido</button>`
+                : `<button class="btn btn-sm btn-success" onclick="updateRequestStatus(${req.id}, 'devuelto')">Marcar como Devuelto</button>`}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderHistoryTable(list) {
+      const target = elements.requestsTables.history;
+      if (!target) return;
+      const source = applyRequestFilter(list);
+      if (!source.length) {
+        target.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Sin movimientos en el historial.</td></tr>';
+        return;
+      }
+      target.innerHTML = source.map(req => {
+        const overdueClass = isOverdue(req) ? 'request-row-overdue' : '';
+        const needsReturn = req.status === 'recogido';
+        return `
+          <tr class="${overdueClass}">
+            <td>${resolveBookTitle(req)}</td>
+            <td>${req.requester_name || '—'}</td>
+            <td>${req.requester_rut || '—'}</td>
+            <td>${req.requester_phone || '—'}</td>
+            <td>${formatDate(req.request_date)}</td>
+            <td>${formatDateOnly(req.due_date)}</td>
+            <td><span class="badge ${statusClass(req.status)}">${formatStatus(req.status)}</span></td>
+            <td class="text-end">
+              ${needsReturn ? `<button class="btn btn-sm btn-success" onclick="updateRequestStatus(${req.id}, 'devuelto')">Marcar como Devuelto</button>` : '<span class="text-muted small">—</span>'}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function statusClass(estado = '') {
+      const map = {
+        pendiente: 'text-bg-warning',
+        aprobado: 'text-bg-info',
+        recogido: 'text-bg-primary',
+        devuelto: 'text-bg-success',
+        rechazado: 'text-bg-danger'
+      };
+      return map[estado.toLowerCase()] || 'text-bg-secondary';
+    }
+
+    function renderOverdue() {
+      const list = state.buckets.overdue;
+      if (!list.length) {
+        elements.overdueList.innerHTML = '<li class="list-group-item text-muted">Sin préstamos vencidos.</li>';
+        return;
+      }
+      elements.overdueList.innerHTML = list.map(item => `
+        <li class="list-group-item d-flex justify-content-between align-items-start">
+          <div>
+            <strong>${item.requester_name || ''}</strong>
+            <p class="mb-0 text-muted small">${item.requester_rut || ''}</p>
+          </div>
+          <div class="text-end">
+            <span class="badge ${statusClass(item.status)} mb-1">${formatStatus(item.status)}</span>
+            <p class="mb-0 small">Vencido: ${formatDateOnly(item.due_date)}</p>
+          </div>
+        </li>
+      `).join('');
+    }
+
+    function resolveBookTitle(req) {
+      const bookId = Number(req.book_id || req.libroId);
+      if (bookId) {
+        const book = state.books.find(b => Number(b.id) === bookId);
+        if (book) return book.titulo;
+      }
+      return req.book_title || `Libro #${req.book_id || req.libroId || '—'}`;
+    }
+
+    function isOverdue(req) {
+      if (!req?.due_date) return false;
+      if ((req.status || '').toLowerCase() !== 'recogido') return false;
+      const dueDate = new Date(req.due_date);
+      if (Number.isNaN(dueDate.getTime())) return false;
+      const today = new Date();
+      dueDate.setHours(23, 59, 59, 999);
+      return dueDate < today;
+    }
+
+    function formatDateOnly(value) {
+      if (!value) return '—';
+      try {
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return value;
+        return date.toLocaleDateString('es-CL');
+      } catch (error) {
+        return value;
+      }
+    }
+
+    function openApproveModal(requestId) {
+      if (!elements.dueDateInput) return;
+      approveTargetId = requestId;
+      elements.dueDateInput.value = '';
+      elements.dueDateInput.classList.remove('is-invalid');
+      elements.dueDateInput.min = new Date().toISOString().split('T')[0];
+      approveModalInstance?.show();
+    }
+
+    async function downloadOverdueCsv() {
+      try {
+        const response = await fetch('/api/admin/requests/overdue.csv', withAuth());
+        if (!response.ok) {
+          throw new Error('No se pudo obtener el CSV');
+        }
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        const stamp = new Date().toISOString().split('T')[0];
+        link.download = `prestamos_vencidos_${stamp}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+        showToast('CSV descargado');
+      } catch (error) {
+        showToast(error.message || 'No se pudo descargar el CSV', 'danger');
+      }
+    }
+
+    function renderBooks() {
+      if (!state.books.length) {
+        elements.booksGrid.innerHTML = '<p class="text-muted">No hay libros registrados.</p>';
+        return;
+      }
+      const latest = [...state.books].slice(-6).reverse();
+      elements.booksGrid.innerHTML = latest.map(book => {
+        const id = Number(book.id);
+        const tipo = escapeHtml(book.tipo || 'digital');
+        const titulo = escapeHtml(book.titulo || 'Sin título');
+        const autor = escapeHtml(book.autor || 'Autor no disponible');
+        const descripcion = escapeHtml(book.descripcion || '');
+        const genero = escapeHtml(book.genero || 'varios');
+        return `
+        <div class="col-12 col-md-6">
+          <div class="border rounded-4 p-3 h-100 d-flex flex-column">
+            <div>
+              <p class="text-uppercase small text-muted mb-1">${tipo}</p>
+              <h3 class="h6 mb-1">${titulo}</h3>
+              <p class="mb-1 text-muted">${autor}</p>
+              <p class="small text-muted mb-2">${descripcion}</p>
+              <span class="badge bg-light text-dark">${genero}</span>
+            </div>
+            <div class="mt-3 d-flex flex-wrap gap-2">
+              <button class="btn btn-sm btn-outline-primary" type="button" data-action="edit-book" data-id="${id}"><i class="bi bi-pencil me-1"></i>Editar</button>
+              <button class="btn btn-sm btn-outline-danger" type="button" data-action="delete-book" data-id="${id}"><i class="bi bi-trash me-1"></i>Eliminar</button>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function renderLogs() {
+      if (!state.logs.length) {
+        elements.logList.innerHTML = '<div class="list-group-item text-muted">Sin actividad reciente.</div>';
+        return;
+      }
+      const latest = state.logs.slice(-8).reverse();
+      elements.logList.innerHTML = latest.map(log => `
+        <div class="list-group-item d-flex align-items-start gap-2">
+          <div class="timeline-dot mt-2"></div>
+          <div>
+            <p class="mb-1 fw-semibold">${log.action || 'evento'}</p>
+            <p class="mb-0 text-muted small">${log.usuario || 'sistema'} · ${formatDate(log.at)}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    elements.booksGrid?.addEventListener('click', event => {
+      const editBtn = event.target.closest('[data-action="edit-book"]');
+      if (editBtn) {
+        const id = Number(editBtn.dataset.id);
+        if (id) startEditBook(id);
+        return;
+      }
+      const deleteBtn = event.target.closest('[data-action="delete-book"]');
+      if (deleteBtn) {
+        const id = Number(deleteBtn.dataset.id);
+        if (id) confirmDeleteBook(id);
+      }
+    });
+
+    function findBookById(id) {
+      return state.books.find(book => Number(book.id) === Number(id));
+    }
+
+    function startEditBook(bookId) {
+      const book = findBookById(bookId);
+      if (!book || !elements.bookForm) {
+        showToast('Libro no encontrado', 'danger');
+        return;
+      }
+      editingBookId = Number(bookId);
+      const fields = ['titulo', 'autor', 'genero', 'tipo', 'fecha_publicacion', 'descripcion'];
+      fields.forEach(name => {
+        const control = elements.bookForm.elements[name];
+        if (!control) return;
+        const fallback = name === 'tipo' ? 'digital' : '';
+        control.value = book[name] || fallback;
+      });
+      setBookFormMode('edit', { title: book.titulo || 'Libro' });
+      window.scrollTo({ top: elements.bookForm.offsetTop - 80, behavior: 'smooth' });
+      showToast(`Editando "${book.titulo || 'Libro'}"`, 'info');
+    }
+
+    function confirmDeleteBook(bookId) {
+      const book = findBookById(bookId);
+      const title = book?.titulo || 'este libro';
+      if (!confirm(`¿Eliminar "${title}"? Esta acción no se puede deshacer.`)) return;
+      deleteBook(bookId);
+    }
+
+    async function deleteBook(bookId) {
+      try {
+        await fetchJson(`/api/libros/${bookId}`, { method: 'DELETE' });
+        if (editingBookId === Number(bookId)) {
+          resetBookForm();
+        }
+        showToast('Libro eliminado');
+        loadDashboard();
+      } catch (error) {
+        showToast(error.message || 'No se pudo eliminar el libro', 'danger');
+      }
+    }
+
+    async function updateRequestStatus(id, status, extras = {}, successMessage = 'Estado actualizado') {
+      try {
+        await fetchJson(`/api/admin/requests/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status, ...extras })
+        });
+        showToast(successMessage);
+        loadDashboard();
+      } catch (error) {
+        showToast(error.message || 'No se pudo actualizar la solicitud', 'danger');
+        throw error;
+      }
+    }
+
+    elements.bookForm.addEventListener('submit', async event => {
+      event.preventDefault();
+      const formData = new FormData(elements.bookForm);
+      const isEdit = Boolean(editingBookId);
+      const url = isEdit ? `/api/libros/${editingBookId}` : '/api/libros';
+      const method = isEdit ? 'PUT' : 'POST';
+      try {
+        await fetchJson(url, { method, body: formData });
+        showToast(isEdit ? 'Libro actualizado correctamente' : 'Libro agregado correctamente');
+        resetBookForm();
+        loadDashboard();
+      } catch (error) {
+        showToast(error.message || (isEdit ? 'Error al actualizar libro' : 'Error al agregar libro'), 'danger');
+      }
+    });
+
+    elements.userForm.addEventListener('submit', async event => {
+      event.preventDefault();
+      const payload = Object.fromEntries(new FormData(elements.userForm).entries());
+      try {
+        await fetchJson('/api/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        elements.userForm.reset();
+        showToast('Usuario creado');
+        loadDashboard();
+      } catch (error) {
+        showToast('Error al crear usuario', 'danger');
+      }
+    });
+
+    elements.requestFilterSelect?.addEventListener('change', event => {
+      state.requestFilter = event.target.value;
+      renderRequestTables();
+    });
+
+    elements.exportOverdueBtn?.addEventListener('click', downloadOverdueCsv);
+
+    elements.approveForm?.addEventListener('submit', async event => {
+      event.preventDefault();
+      if (!approveTargetId) return;
+      const dueDate = elements.dueDateInput?.value;
+      if (!dueDate) {
+        elements.dueDateInput?.classList.add('is-invalid');
+        return;
+      }
+      elements.dueDateInput.classList.remove('is-invalid');
+      try {
+        await updateRequestStatus(approveTargetId, 'aprobado', { due_date: dueDate }, 'Solicitud aprobada');
+        approveModalInstance?.hide();
+        approveTargetId = null;
+      } catch (error) {
+        elements.dueDateInput?.classList.add('is-invalid');
+      }
+    });
+
+    elements.approveModal?.addEventListener('hidden.bs.modal', () => {
+      approveTargetId = null;
+      elements.dueDateInput?.classList.remove('is-invalid');
+    });
+
+    function formatDate(value) {
+      if (!value) return '—';
+      try {
+        return new Date(value).toLocaleString('es-CL');
+      } catch (error) {
+        return value;
+      }
+    }
+
+    function formatStatus(value = '') {
+      const map = {
+        pendiente: 'Pendiente',
+        aprobado: 'Aprobado',
+        recogido: 'Recogido',
+        devuelto: 'Devuelto',
+        rechazado: 'Rechazado',
+        en_proceso: 'En proceso',
+        completado: 'Devuelto'
+      };
+      return map[value?.toLowerCase()] || value || '—';
+    }
+
+    function showToast(message, type = 'primary') {
+      const toastEl = document.createElement('div');
+      toastEl.className = `toast text-bg-${type} border-0 mb-2`;
+      toastEl.setAttribute('role', 'alert');
+      toastEl.innerHTML = `
+        <div class="d-flex">
+          <div class="toast-body">${message}</div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>`;
+      elements.toastContainer.appendChild(toastEl);
+      const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+      toast.show();
+      toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
+    }
+
+    function logoutAdmin() {
+      localStorage.removeItem(ADMIN_TOKEN_KEY);
+      window.location.href = buildLoginUrl();
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>

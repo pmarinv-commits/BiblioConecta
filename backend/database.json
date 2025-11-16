@@ -1,0 +1,472 @@
+{
+  "usuarios": [
+    {
+      "id": 1,
+      "nombre": "Admin Demo",
+      "rut": "admin",
+      "email": "admin@example.com",
+      "role": "admin",
+      "password": "admin"
+    },
+    {
+      "id": 3,
+      "nombre": "Alumno Demo",
+      "rut": "12345678-9",
+      "email": "alumno@example.com",
+      "role": "alumno",
+      "password": "12345678-9"
+    },
+    {
+      "id": 4,
+      "nombre": "Admin B Toloza",
+      "rut": "btolozaa",
+      "email": "btolozaa@alumnos.ceduc.cl",
+      "role": "admin",
+      "password": "admin123",
+      "last_login": "2025-11-16T01:50:18.310Z"
+    },
+    {
+      "id": 5,
+      "nombre": "Brian F",
+      "rut": "brian123",
+      "email": "brianftxd3@gmail.com",
+      "role": "alumno",
+      "password": "brian123"
+    },
+    {
+      "id": 6,
+      "nombre": "Pablo Marín",
+      "rut": "pmarinv",
+      "email": "pmarinv@alumnos.ceduc.cl",
+      "role": "alumno",
+      "password": "pablo123"
+    }
+  ],
+  "libros": [
+    {
+      "id": 3,
+      "titulo": "El principito",
+      "autor": "Antoine De Saint-Exupéry",
+      "descripcion": "El Principito de Antoine de Saint-Exupéry es una novela corta que narra el encuentro entre un aviador, perdido en el desierto, y un misterioso niño de cabello dorado que ha viajado por diversos planetas",
+      "genero": "novela",
+      "fecha_publicacion": "06/04/1943",
+      "portada": "/uploads/1763256865961-el_principito.webp",
+      "pdf": "/uploads/1763256825165-El-Principitocompleto.pdf",
+      "tipo": "digital",
+      "updated_at": "2025-11-16T01:34:25.966Z"
+    },
+    {
+      "id": 4,
+      "titulo": "Colmillo blanco",
+      "autor": "Jack London",
+      "descripcion": "\"Colmillo Blanco\" narra la historia de un perro lobo salvaje que, tras nacer en la naturaleza, es capturado por indígenas y más tarde maltratado por un hombre cruel. Finalmente, es rescatado y adoptado por un buscador de oro, quien intenta domesticarlo y le enseña sobre la lealtad y el afecto",
+      "genero": "novela",
+      "fecha_publicacion": "Octubre de 1906",
+      "portada": "/uploads/1763256977891-colmilloblanco.jpg",
+      "pdf": "",
+      "tipo": "fisico",
+      "updated_at": "2025-11-16T01:36:17.895Z"
+    },
+    {
+      "id": 5,
+      "titulo": "La casa de los espíritus",
+      "autor": "Isabel Allende",
+      "descripcion": " La historia se enfoca en las mujeres de la familia, especialmente Clara, una psíquica, y su nieta Alba, y aborda temas como el amor, la familia, la lucha de clases, la política y la resistencia frente a la opresión. ",
+      "genero": "novela",
+      "fecha_publicacion": "Octubre de 1982",
+      "portada": "/uploads/1763258111911-portada_d40f8c8c21c636ee.jpeg",
+      "pdf": "/uploads/1763258111911-libro_a95d61814c239d5c.pdf",
+      "tipo": "digital",
+      "updated_at": "2025-11-16T01:58:53.719Z"
+    }
+  ],
+  "requests": [
+    {
+      "id": 1,
+      "book_id": 4,
+      "requester_name": "Brian Toloza",
+      "requester_email": "666briant@gmail.com",
+      "requester_rut": "21171083-7",
+      "requester_phone": "926362233",
+      "requester_address": "",
+      "requester_id_photo": "",
+      "book_title": null,
+      "request_date": "2025-11-15T21:13:07.312Z",
+      "status": "devuelto",
+      "due_date": "2025-12-01",
+      "approved_at": "2025-11-15T22:31:18.765Z",
+      "updated_at": "2025-11-15T22:31:32.789Z",
+      "picked_at": "2025-11-15T22:31:24.105Z",
+      "returned_at": "2025-11-15T22:31:32.789Z"
+    }
+  ],
+  "logs": [
+    {
+      "usuario": "btolozaa@alumnos.ceduc.cl",
+      "action": "admin_login",
+      "at": "2025-11-15T07:58:16.384Z"
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-15T16:51:12.105Z"
+    },
+    {
+      "usuario": "btolozaa@alumnos.ceduc.cl",
+      "action": "admin_login",
+      "at": "2025-11-15T17:11:51.536Z"
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-15T17:17:04.048Z"
+    },
+    {
+      "usuario": "btolozaa@alumnos.ceduc.cl",
+      "action": "admin_login",
+      "at": "2025-11-15T17:19:54.726Z"
+    },
+    {
+      "usuario": "pmarinv@alumnos.ceduc.cl",
+      "action": "login",
+      "at": "2025-11-15T17:32:59.073Z"
+    },
+    {
+      "usuario": "admin",
+      "action": "libro_creado",
+      "at": "2025-11-15T17:47:53.797Z",
+      "libroId": 3
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-15T17:53:19.006Z"
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-15T18:41:51.679Z"
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-15T18:50:58.804Z"
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-15T19:03:32.902Z"
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-15T19:10:41.495Z"
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-15T19:18:09.919Z"
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-15T19:26:25.652Z"
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-15T19:34:17.929Z"
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-15T20:30:23.976Z"
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-15T20:44:47.384Z"
+    },
+    {
+      "usuario": "btolozaa@alumnos.ceduc.cl",
+      "action": "admin_login",
+      "at": "2025-11-15T21:03:38.429Z"
+    },
+    {
+      "usuario": "admin",
+      "action": "libro_creado",
+      "at": "2025-11-15T21:08:00.203Z",
+      "libroId": 4
+    },
+    {
+      "usuario": "666briant@gmail.com",
+      "action": "request_created",
+      "at": "2025-11-15T21:13:07.312Z",
+      "requestId": 1
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-15T21:20:50.415Z"
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-15T21:43:57.175Z"
+    },
+    {
+      "usuario": "btolozaa@alumnos.ceduc.cl",
+      "action": "admin_login",
+      "at": "2025-11-15T21:49:02.580Z"
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-15T21:59:44.338Z"
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-15T22:04:16.824Z"
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-15T22:06:31.355Z"
+    },
+    {
+      "usuario": "admin",
+      "action": "libro_actualizado",
+      "at": "2025-11-15T22:25:33.168Z",
+      "libroId": 3
+    },
+    {
+      "usuario": "btolozaa@alumnos.ceduc.cl",
+      "action": "request_aprobado",
+      "at": "2025-11-15T22:31:18.765Z",
+      "requestId": 1
+    },
+    {
+      "usuario": "btolozaa@alumnos.ceduc.cl",
+      "action": "request_recogido",
+      "at": "2025-11-15T22:31:24.105Z",
+      "requestId": 1
+    },
+    {
+      "usuario": "btolozaa@alumnos.ceduc.cl",
+      "action": "request_devuelto",
+      "at": "2025-11-15T22:31:32.789Z",
+      "requestId": 1
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-15T22:54:54.743Z"
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-16T00:08:10.758Z"
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-16T00:42:56.070Z"
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-16T00:46:00.154Z"
+    },
+    {
+      "usuario": "btolozaa@alumnos.ceduc.cl",
+      "action": "admin_login",
+      "at": "2025-11-16T01:15:41.840Z"
+    },
+    {
+      "usuario": "admin",
+      "action": "libro_actualizado",
+      "at": "2025-11-16T01:16:04.972Z",
+      "libroId": 3
+    },
+    {
+      "usuario": "admin",
+      "action": "libro_actualizado",
+      "at": "2025-11-16T01:16:27.237Z",
+      "libroId": 3
+    },
+    {
+      "usuario": "btolozaa@alumnos.ceduc.cl",
+      "action": "admin_login",
+      "at": "2025-11-16T01:28:21.040Z"
+    },
+    {
+      "usuario": "admin",
+      "action": "libro_actualizado",
+      "at": "2025-11-16T01:28:46.608Z",
+      "libroId": 4
+    },
+    {
+      "usuario": "admin",
+      "action": "libro_actualizado",
+      "at": "2025-11-16T01:29:04.413Z",
+      "libroId": 3
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-16T01:29:28.337Z"
+    },
+    {
+      "usuario": "btolozaa@alumnos.ceduc.cl",
+      "action": "admin_login",
+      "at": "2025-11-16T01:29:50.744Z"
+    },
+    {
+      "usuario": "admin",
+      "action": "libro_actualizado",
+      "at": "2025-11-16T01:30:00.183Z",
+      "libroId": 4
+    },
+    {
+      "usuario": "admin",
+      "action": "libro_actualizado",
+      "at": "2025-11-16T01:30:11.233Z",
+      "libroId": 3
+    },
+    {
+      "usuario": "admin",
+      "action": "libro_actualizado",
+      "at": "2025-11-16T01:31:28.839Z",
+      "libroId": 3
+    },
+    {
+      "usuario": "admin",
+      "action": "libro_actualizado",
+      "at": "2025-11-16T01:31:28.898Z",
+      "libroId": 3
+    },
+    {
+      "usuario": "admin",
+      "action": "libro_actualizado",
+      "at": "2025-11-16T01:31:28.905Z",
+      "libroId": 3
+    },
+    {
+      "usuario": "admin",
+      "action": "libro_actualizado",
+      "at": "2025-11-16T01:31:28.913Z",
+      "libroId": 3
+    },
+    {
+      "usuario": "admin",
+      "action": "libro_actualizado",
+      "at": "2025-11-16T01:31:28.919Z",
+      "libroId": 3
+    },
+    {
+      "usuario": "admin",
+      "action": "libro_actualizado",
+      "at": "2025-11-16T01:31:28.922Z",
+      "libroId": 3
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-16T01:32:41.412Z"
+    },
+    {
+      "usuario": "admin",
+      "action": "libro_actualizado",
+      "at": "2025-11-16T01:33:45.194Z",
+      "libroId": 3
+    },
+    {
+      "usuario": "admin",
+      "action": "libro_actualizado",
+      "at": "2025-11-16T01:34:25.966Z",
+      "libroId": 3
+    },
+    {
+      "usuario": "admin",
+      "action": "libro_actualizado",
+      "at": "2025-11-16T01:36:17.895Z",
+      "libroId": 4
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-16T01:44:37.718Z"
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-16T01:49:40.905Z"
+    },
+    {
+      "usuario": "btolozaa@alumnos.ceduc.cl",
+      "action": "admin_login",
+      "at": "2025-11-16T01:50:18.310Z"
+    },
+    {
+      "usuario": "admin",
+      "action": "libro_creado",
+      "at": "2025-11-16T01:55:11.940Z",
+      "libroId": 5
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-16T01:55:30.247Z"
+    },
+    {
+      "usuario": "admin",
+      "action": "libro_actualizado",
+      "at": "2025-11-16T01:58:53.719Z",
+      "libroId": 5
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-16T01:59:15.524Z"
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-16T03:30:36.505Z"
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-16T03:37:31.693Z"
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-16T03:54:58.205Z"
+    }
+  ],
+  "subrayados": [],
+  "listasLectura": [],
+  "notificaciones": [],
+  "progresos": [
+    {
+      "id": 1,
+      "alumnoId": 5,
+      "libroId": 3,
+      "percentage": 22,
+      "currentPage": 19,
+      "totalPages": 88,
+      "updatedAt": "2025-11-16T03:37:22.201Z"
+    },
+    {
+      "id": 2,
+      "alumnoId": 5,
+      "libroId": 5,
+      "percentage": 3,
+      "currentPage": 10,
+      "totalPages": 331,
+      "updatedAt": "2025-11-16T02:38:02.371Z"
+    }
+  ]
+}
