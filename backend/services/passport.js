@@ -17,17 +17,25 @@ module.exports = function(passport){
 
   const clientID = process.env.GOOGLE_CLIENT_ID || 'GOOGLE_CLIENT_ID';
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET || 'GOOGLE_CLIENT_SECRET';
+  const baseUrl = (process.env.APP_BASE_URL || '').replace(/\/$/, '');
+
+  const resolveCallback = (explicit, defaultPath) => {
+    const trimmed = explicit && explicit.trim();
+    if(trimmed) return trimmed;
+    if(baseUrl) return `${baseUrl}${defaultPath}`;
+    return defaultPath;
+  };
 
   const strategies = [
     {
       name: 'google-admin',
       allowedRoles: ['admin'],
-      callbackURL: process.env.GOOGLE_ADMIN_CALLBACK || '/api/admin/auth/google/callback'
+      callbackURL: resolveCallback(process.env.GOOGLE_ADMIN_CALLBACK, '/api/admin/auth/google/callback')
     },
     {
       name: 'google-student',
       allowedRoles: ['alumno'],
-      callbackURL: process.env.GOOGLE_STUDENT_CALLBACK || '/api/auth/google/callback'
+      callbackURL: resolveCallback(process.env.GOOGLE_STUDENT_CALLBACK || process.env.GOOGLE_CALLBACK, '/api/auth/google/callback')
     }
   ];
 
