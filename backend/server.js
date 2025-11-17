@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const helmet = require('helmet');
@@ -8,6 +9,7 @@ const cookieSession = require('cookie-session');
 const cors = require('cors');
 
 const app = express();
+app.set('trust proxy', 1);
 const frontendDir = path.join(__dirname,'../frontend');
 
 app.use(helmet({
@@ -40,6 +42,18 @@ app.use(rateLimit({windowMs:15*60*1000, max:300}));
 
 // sessions for passport
 app.use(cookieSession({name:'session', keys:[process.env.SESSION_SECRET||'devkey'], maxAge:24*60*60*1000}));
+// cookie-session does not expose regenerate/save, so stub them for passport compatibility
+app.use((req, res, next) => {
+	if (req.session) {
+		if (typeof req.session.regenerate !== 'function') {
+			req.session.regenerate = (done) => done && done();
+		}
+		if (typeof req.session.save !== 'function') {
+			req.session.save = (done) => done && done();
+		}
+	}
+	next();
+});
 
 // passport
 try{ require('./services/passport')(passport); app.use(passport.initialize()); app.use(passport.session()); }catch(e){ console.warn('Passport init error', e.message) }
