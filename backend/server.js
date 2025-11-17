@@ -1,4 +1,10 @@
-require('dotenv').config();
+try {
+	require('dotenv').config();
+} catch (err) {
+	if (process.env.NODE_ENV !== 'production') {
+		console.warn('dotenv not loaded; using process env only');
+	}
+}
 const express = require('express');
 const path = require('path');
 const helmet = require('helmet');
