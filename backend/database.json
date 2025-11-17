@@ -23,7 +23,7 @@
       "email": "btolozaa@alumnos.ceduc.cl",
       "role": "admin",
       "password": "admin123",
-      "last_login": "2025-11-16T01:50:18.310Z"
+      "last_login": "2025-11-17T04:43:26.167Z"
     },
     {
       "id": 5,
@@ -39,7 +39,17 @@
       "rut": "pmarinv",
       "email": "pmarinv@alumnos.ceduc.cl",
       "role": "alumno",
-      "password": "pablo123"
+      "password": "pablo123",
+      "last_login": "2025-11-17T04:50:13.959Z"
+    },
+    {
+      "id": 7,
+      "nombre": "Pablo",
+      "rut": "pablomarinv77",
+      "email": "pablomarinv77@gmail.com",
+      "role": "alumno",
+      "password": "pablo123",
+      "last_login": "2025-11-17T04:50:26.039Z"
     }
   ],
   "libros": [
@@ -444,6 +454,11 @@
       "usuario": "brianftxd3@gmail.com",
       "action": "login",
       "at": "2025-11-16T03:54:58.205Z"
+    },
+    {
+      "usuario": "btolozaa@alumnos.ceduc.cl",
+      "action": "admin_login",
+      "at": "2025-11-17T04:43:26.167Z"
     }
   ],
   "subrayados": [],
