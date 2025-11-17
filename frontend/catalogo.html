@@ -260,6 +260,15 @@
       flex: 1;
     }
 
+    .clamped-text {
+      display: -webkit-box;
+      -webkit-line-clamp: 5;
+      line-clamp: 5;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: calc(1.15rem * 5);
+    }
+
     @media (max-width: 992px) {
       .hero-stage {
         padding-top: 4rem;
@@ -597,7 +606,7 @@
               <span class="badge bg-light text-dark mb-2 text-uppercase">${(libro.tipo || 'digital')}</span>
               <h4 class="h5">${libro.titulo || 'Título no disponible'}</h4>
               <p class="text-muted mb-1">${libro.autor || 'Autor no especificado'}</p>
-              <p class="small text-secondary">${libro.descripcion || ''}</p>
+              <p class="small text-secondary clamped-text">${libro.descripcion || ''}</p>
               ${renderActionButtons(libro, 'outline')}
             </div>
           </article>`;
@@ -627,7 +636,7 @@
               <span class="badge bg-light text-dark mb-2 text-uppercase">${libro.tipo || 'digital'}</span>
               <h3 class="h5">${libro.titulo || 'Sin título'}</h3>
               <p class="text-muted small mb-2">${libro.autor || 'Autor no especificado'}</p>
-              <p class="small text-secondary">${libro.descripcion || ''}</p>
+              <p class="small text-secondary clamped-text">${libro.descripcion || ''}</p>
               ${renderWelcomeActions(libro)}
             </div>
           </article>`;
