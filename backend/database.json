@@ -5,7 +5,9 @@
       "nombre": "Admin Demo",
       "rut": "admin",
       "email": "admin@example.com",
-      "role": "admin",
+      "role": [
+        "admin"
+      ],
       "password": "admin"
     },
     {
@@ -13,7 +15,9 @@
       "nombre": "Alumno Demo",
       "rut": "12345678-9",
       "email": "alumno@example.com",
-      "role": "alumno",
+      "role": [
+        "alumno"
+      ],
       "password": "12345678-9"
     },
     {
@@ -21,7 +25,10 @@
       "nombre": "Admin B Toloza",
       "rut": "btolozaa",
       "email": "btolozaa@alumnos.ceduc.cl",
-      "role": "admin",
+      "role": [
+        "admin",
+        "alumno"
+      ],
       "password": "admin123",
       "last_login": "2025-11-17T04:43:26.167Z"
     },
@@ -30,7 +37,9 @@
       "nombre": "Brian F",
       "rut": "brian123",
       "email": "brianftxd3@gmail.com",
-      "role": "alumno",
+      "role": [
+        "alumno"
+      ],
       "password": "brian123"
     },
     {
@@ -39,57 +48,7 @@
       "rut": "pmarinv",
       "email": "pmarinv@alumnos.ceduc.cl",
       "role": "alumno",
-      "password": "pablo123",
-      "last_login": "2025-11-17T04:50:13.959Z"
-    },
-    {
-      "id": 7,
-      "nombre": "Pablo",
-      "rut": "pablomarinv77",
-      "email": "pablomarinv77@gmail.com",
-      "role": "alumno",
-      "password": "pablo123",
-      "last_login": "2025-11-17T04:50:26.039Z"
-    },
-    {
-      "id": 8,
-      "nombre": "Gonzalo Garrido",
-      "rut": "ggarridot",
-      "email": "ggarridot@alumnos.ceduc.cl",
-      "role": "admin",
-      "password": "ggarridot"
-    },
-    {
-      "id": 9,
-      "nombre": "Natalia Castañeda",
-      "rut": "ncastanedac",
-      "email": "ncastanedac@alumnos.ceduc.cl",
-      "role": "admin",
-      "password": "ncastanedac"
-    },
-    {
-      "id": 10,
-      "nombre": "Yire Inostroza",
-      "rut": "Yinostrozag",
-      "email": "Yinostrozag@alumnos.ceduc.cl",
-      "role": "admin",
-      "password": "Yinostrozag"
-    },
-    {
-      "id": 11,
-      "nombre": "Pablo Vidal",
-      "rut": "pvidals",
-      "email": "pvidals@alumnos.ceduc.cl",
-      "role": "admin",
-      "password": "pvidals"
-    },
-    {
-      "id": 12,
-      "nombre": "Gabriel Bueno",
-      "rut": "gbuenov",
-      "email": "gbuenov@alumnos.ceduc.cl",
-      "role": "admin",
-      "password": "gbuenov"
+      "password": "pablo123"
     }
   ],
   "libros": [
@@ -494,11 +453,6 @@
       "usuario": "brianftxd3@gmail.com",
       "action": "login",
       "at": "2025-11-16T03:54:58.205Z"
-    },
-    {
-      "usuario": "btolozaa@alumnos.ceduc.cl",
-      "action": "admin_login",
-      "at": "2025-11-17T04:43:26.167Z"
     }
   ],
   "subrayados": [],

@@ -3,6 +3,7 @@ const router = express.Router();
 const { readDB, saveDB } = require('../services/db_json');
 const { hashPassword } = require('../services/passwords');
 const { verifyToken, requireRole } = require('../middleware/auth');
+const { toRoleArray } = require('../services/roles');
 
 router.use(verifyToken, requireRole('admin'));
 
@@ -11,15 +12,18 @@ router.post('/', async (req,res)=>{
   try {
     const db = readDB();
     db.logs = db.logs || [];
-    const { nombre, rut, email, role, password, curso } = req.body;
+    const { nombre, rut, email, role, roles, password, curso } = req.body;
     const allowedRoles = ['alumno', 'admin'];
-    if(!nombre || !email || !role) {
+    const rolePayload = roles ?? role;
+    const normalizedRoles = toRoleArray(rolePayload);
+    if(!nombre || !email || !normalizedRoles.length) {
       return res.status(400).json({error:'nombre, email y role son obligatorios'});
     }
-    if(!allowedRoles.includes(role)) {
-      return res.status(400).json({error:'role inválido'});
+    const invalidRole = normalizedRoles.find(r => !allowedRoles.includes(r));
+    if(invalidRole) {
+      return res.status(400).json({error:`role inválido: ${invalidRole}`});
     }
-    if(role === 'alumno' && !curso) {
+    if(normalizedRoles.includes('alumno') && !curso) {
       return res.status(400).json({error:'El curso es obligatorio para alumnos'});
     }
     const fallbackPassword = password || rut;
@@ -32,7 +36,7 @@ router.post('/', async (req,res)=>{
       nombre,
       rut: rut || null,
       email,
-      role,
+      role: normalizedRoles,
       curso: curso || null,
       password: await hashPassword(fallbackPassword)
     };

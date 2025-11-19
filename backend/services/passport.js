@@ -2,6 +2,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const fs = require('fs');
 const path = require('path');
 const DB_FILE = path.join(__dirname,'../database.json');
+const { hasAnyRole } = require('./roles');
 
 function readDB(){ return JSON.parse(fs.readFileSync(DB_FILE,'utf8')); }
 
@@ -45,7 +46,7 @@ module.exports = function(passport){
       const db = readDB();
       const u = db.usuarios.find(x=> x.email===email);
       if(!u) return done(null, false, {message:'Email not allowed'});
-      if(!allowedRoles.includes(u.role)) return done(null,false,{message:'Role not allowed'});
+      if(!hasAnyRole(u.role, allowedRoles)) return done(null,false,{message:'Role not allowed'});
       u.last_login = new Date().toISOString();
       writeDB(db);
       return done(null, u);
