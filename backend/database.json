@@ -50,6 +50,46 @@
       "role": "alumno",
       "password": "pablo123",
       "last_login": "2025-11-17T04:50:26.039Z"
+    },
+    {
+      "id": 8,
+      "nombre": "Gonzalo Garrido",
+      "rut": "ggarridot",
+      "email": "ggarridot@alumnos.ceduc.cl",
+      "role": "admin",
+      "password": "ggarridot"
+    },
+    {
+      "id": 9,
+      "nombre": "Natalia Castañeda",
+      "rut": "ncastanedac",
+      "email": "ncastanedac@alumnos.ceduc.cl",
+      "role": "admin",
+      "password": "ncastanedac"
+    },
+    {
+      "id": 10,
+      "nombre": "Yire Inostroza",
+      "rut": "Yinostrozag",
+      "email": "Yinostrozag@alumnos.ceduc.cl",
+      "role": "admin",
+      "password": "Yinostrozag"
+    },
+    {
+      "id": 11,
+      "nombre": "Pablo Vidal",
+      "rut": "pvidals",
+      "email": "pvidals@alumnos.ceduc.cl",
+      "role": "admin",
+      "password": "pvidals"
+    },
+    {
+      "id": 12,
+      "nombre": "Gabriel Bueno",
+      "rut": "gbuenov",
+      "email": "gbuenov@alumnos.ceduc.cl",
+      "role": "admin",
+      "password": "gbuenov"
     }
   ],
   "libros": [
