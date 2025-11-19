@@ -1,65 +1,49 @@
 const express = require('express');
-const router = express.Router();
 const { readDB, saveDB } = require('../services/db_json');
-const { hashPassword } = require('../services/passwords');
 const { verifyToken, requireRole } = require('../middleware/auth');
-const { toRoleArray } = require('../services/roles');
+const { computeNextId, findUserByEmail, serializeUser } = require('../services/users');
+const { ensureRoleArray } = require('../services/roles');
+
+const router = express.Router();
 
 router.use(verifyToken, requireRole('admin'));
 
-// create user (admin panel)
-router.post('/', async (req,res)=>{
-  try {
-    const db = readDB();
-    db.logs = db.logs || [];
-    const { nombre, rut, email, role, roles, password, curso } = req.body;
-    const allowedRoles = ['alumno', 'admin'];
-    const rolePayload = roles ?? role;
-    const normalizedRoles = toRoleArray(rolePayload);
-    if(!nombre || !email || !normalizedRoles.length) {
-      return res.status(400).json({error:'nombre, email y role son obligatorios'});
-    }
-    const invalidRole = normalizedRoles.find(r => !allowedRoles.includes(r));
-    if(invalidRole) {
-      return res.status(400).json({error:`role inválido: ${invalidRole}`});
-    }
-    if(normalizedRoles.includes('alumno') && !curso) {
-      return res.status(400).json({error:'El curso es obligatorio para alumnos'});
-    }
-    const fallbackPassword = password || rut;
-    if(!fallbackPassword) {
-      return res.status(400).json({error:'Debes definir una contraseña o un RUT'});
-    }
-    const id = db.usuarios.length? Math.max(...db.usuarios.map(u=>u.id))+1:1;
-    const usuario = {
-      id,
-      nombre,
-      rut: rut || null,
-      email,
-      role: normalizedRoles,
-      curso: curso || null,
-      password: await hashPassword(fallbackPassword)
-    };
-    db.usuarios.push(usuario);
-    db.logs.push({usuario:email||rut, action:'usuario_creado', at:new Date().toISOString()});
-    saveDB(db);
-    res.json({ok:true, usuario: sanitizeUser(usuario)});
-  } catch (error) {
-    console.error('Error creando usuario', error);
-    res.status(500).json({error:'No se pudo crear el usuario'});
-  }
-});
-
-// get all users
-router.get('/', (req,res)=>{
+router.get('/', (_req, res) => {
   const db = readDB();
-  const usuarios = (db.usuarios || []).map(sanitizeUser);
-  res.json(usuarios);
+  const payload = (db.usuarios || []).map(serializeUser);
+  res.json(payload);
 });
 
-function sanitizeUser(user = {}){
-  const { password, ...rest } = user;
-  return rest;
-}
+router.post('/', (req, res) => {
+  const { nombre, rut, email, role } = req.body || {};
+  if (!nombre || !rut || !email) {
+    return res.status(400).json({ error: 'Nombre, RUT y correo son obligatorios' });
+  }
+  const normalizedEmail = String(email).trim().toLowerCase();
+  const db = readDB();
+  db.usuarios = db.usuarios || [];
+  if (findUserByEmail(db.usuarios, normalizedEmail)) {
+    return res.status(409).json({ error: 'Ya existe un usuario con ese correo' });
+  }
+  const now = new Date().toISOString();
+  const selectedRoles = typeof role === 'string' && role.toLowerCase() === 'admin'
+    ? ['admin', 'alumno']
+    : ['alumno'];
+  const newUser = {
+    id: computeNextId(db.usuarios),
+    nombre: String(nombre).trim(),
+    rut: String(rut).trim(),
+    email: normalizedEmail,
+    password: String(rut).trim(),
+    role: ensureRoleArray(selectedRoles),
+    created_at: now,
+    last_login: null
+  };
+  db.usuarios.push(newUser);
+  db.logs = db.logs || [];
+  db.logs.push({ usuario: req.user?.email || 'admin', action: 'user_created', at: now, target: normalizedEmail });
+  saveDB(db);
+  res.status(201).json({ ok: true, user: serializeUser(newUser) });
+});
 
 module.exports = router;

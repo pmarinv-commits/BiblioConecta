@@ -1,75 +1,81 @@
 const express = require('express');
-const router = express.Router();
-const { readDB, saveDB } = require('../services/db_json');
-const jwt = require('jsonwebtoken');
 const passport = require('passport');
-const { hashPassword, comparePassword } = require('../services/passwords');
-const { toRoleArray, hasAnyRole, pickPrimaryRole } = require('../services/roles');
+const { readDB, saveDB } = require('../services/db_json');
+const { findUserByEmail } = require('../services/users');
+const { ensureRoleArray } = require('../services/roles');
+const { signUserToken, serializeUser } = require('../services/token');
+const { verifyToken } = require('../middleware/auth');
 
-function issueToken(user, { activeRole } = {}) {
-  const roles = toRoleArray(user.role);
-  const resolvedRole = activeRole || pickPrimaryRole(roles) || null;
-  return jwt.sign({id:user.id, role:resolvedRole, roles, email:user.email}, process.env.JWT_SECRET || 'devsecret',{expiresIn:'8h'});
+const router = express.Router();
+
+function buildRedirect(path, params = {}) {
+  const base = process.env.APP_BASE_URL || 'http://localhost:3001';
+  const url = new URL(path, base);
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      url.searchParams.set(key, value);
+    }
+  });
+  return url.toString();
 }
 
-router.post('/login', async (req,res)=>{
-  try {
-    const {email, password} = req.body;
-    if(!email || !password){
-      return res.status(400).json({error:'Email y contraseña son obligatorios'});
-    }
-    const db = readDB();
-    const normalizedEmail = String(email).trim().toLowerCase();
-    const user = db.usuarios.find(u => (u.email || '').toLowerCase() === normalizedEmail);
-    if(!user){
-      return res.status(401).json({error:'Usuario no encontrado'});
-    }
-    if(!hasAnyRole(user.role, 'alumno')){
-      return res.status(403).json({error:'Usa el acceso de administrador'});
-    }
-    const validPassword = await comparePassword(password, user.password);
-    if(!validPassword){
-      return res.status(401).json({error:'Contraseña incorrecta'});
-    }
-    const roles = toRoleArray(user.role);
-    const activeRole = 'alumno';
-    const token = issueToken(user, { activeRole });
-    db.logs = db.logs || [];
-    db.logs.push({usuario:user.email, action:'login', at:new Date().toISOString()});
-    saveDB(db);
-    res.json({token, user:{id:user.id, email:user.email, nombre:user.nombre, role:activeRole, roles}});
-  } catch (error) {
-    console.error('Error en login alumno', error);
-    res.status(500).json({error:'No se pudo iniciar sesión'});
+function sanitizeCredentials(req) {
+  const email = String(req.body?.email || '').trim().toLowerCase();
+  const password = String(req.body?.password || '').trim();
+  return { email, password };
+}
+
+function ensureGoogleStudent(req, res, next) {
+  if (!passport._strategy || !passport._strategy('google-student')) {
+    return res.redirect(buildRedirect('/catalogo.html', { auth: 'fail' }));
   }
-});
+  next();
+}
 
-router.post('/reset', async (req,res)=>{
-  try {
-    const {email,newPassword} = req.body;
-    if(!email || !newPassword){
-      return res.status(400).json({error:'Email y nueva contraseña son obligatorios'});
-    }
-    const db = readDB();
-    const normalizedEmail = String(email).trim().toLowerCase();
-    const user = db.usuarios.find(x=> (x.email || '').toLowerCase() === normalizedEmail && hasAnyRole(x.role, 'alumno'));
-    if(!user) return res.status(404).json({error:'Usuario no encontrado'});
-    user.password = await hashPassword(newPassword);
-    saveDB(db);
-    res.json({ok:true});
-  } catch (error) {
-    console.error('Error al resetear contraseña', error);
-    res.status(500).json({error:'No se pudo restablecer la contraseña'});
+router.post('/login', (req, res) => {
+  const { email, password } = sanitizeCredentials(req);
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Correo y contraseña obligatorios' });
   }
+  const db = readDB();
+  const user = findUserByEmail(db.usuarios || [], email);
+  if (!user) {
+    return res.status(401).json({ error: 'Credenciales inválidas' });
+  }
+  const isPasswordValid = String(user.password) === password || String(user.rut) === password;
+  if (!isPasswordValid) {
+    return res.status(401).json({ error: 'Credenciales inválidas' });
+  }
+  user.role = ensureRoleArray(user.role || user.roles || ['alumno']);
+  user.last_login = new Date().toISOString();
+  db.logs = db.logs || [];
+  db.logs.push({ usuario: user.email, action: 'login', at: user.last_login });
+  saveDB(db);
+  const token = signUserToken(user);
+  res.json({ token, user: serializeUser(user) });
 });
 
-router.get('/google', (req,res,next)=>{
-  passport.authenticate('google-student', { scope: ['profile','email'], prompt: 'select_account' })(req,res,next);
+router.get('/me', verifyToken, (req, res) => {
+  const db = readDB();
+  const user = (db.usuarios || []).find(entry => Number(entry.id) === Number(req.user.id));
+  if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+  res.json({ user: serializeUser(user) });
 });
 
-router.get('/google/callback', passport.authenticate('google-student', { failureRedirect: '/catalogo.html?auth=fail' }), (req,res)=>{
-  const token = issueToken(req.user, { activeRole: 'alumno' });
-  res.redirect(`/catalogo.html?token=${encodeURIComponent(token)}`);
+router.get('/google', ensureGoogleStudent, passport.authenticate('google-student', {
+  scope: ['profile', 'email'],
+  prompt: 'select_account'
+}));
+
+router.get('/google/callback', ensureGoogleStudent, passport.authenticate('google-student', {
+  failureRedirect: buildRedirect('/catalogo.html', { auth: 'fail' }),
+  session: false
+}), (req, res) => {
+  if (!req.user) {
+    return res.redirect(buildRedirect('/catalogo.html', { auth: 'fail' }));
+  }
+  const token = signUserToken(req.user);
+  res.redirect(buildRedirect('/catalogo.html', { token }));
 });
 
 module.exports = router;

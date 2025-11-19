@@ -40,7 +40,8 @@
       "role": [
         "alumno"
       ],
-      "password": "brian123"
+      "password": "brian123",
+      "last_login": "2025-11-19T03:47:24.534Z"
     },
     {
       "id": 6,
@@ -453,6 +454,16 @@
       "usuario": "brianftxd3@gmail.com",
       "action": "login",
       "at": "2025-11-16T03:54:58.205Z"
+    },
+    {
+      "usuario": "btolozaa@alumnos.ceduc.cl",
+      "action": "admin_login",
+      "at": "2025-11-17T04:43:26.167Z"
+    },
+    {
+      "usuario": "brianftxd3@gmail.com",
+      "action": "login",
+      "at": "2025-11-19T03:47:24.534Z"
     }
   ],
   "subrayados": [],

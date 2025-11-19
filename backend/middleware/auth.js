@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { readDB } = require('../services/db_json');
-const { toRoleArray, hasAnyRole } = require('../services/roles');
+const { normalizeRoles, hasRole } = require('../services/roles');
 
 function verifyToken(req,res,next){
   const auth = req.headers.authorization || '';
@@ -9,26 +9,20 @@ function verifyToken(req,res,next){
   try{
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'devsecret');
     req.user = decoded;
-    const decodedRoles = decoded.roles || decoded.role;
-    const roles = toRoleArray(decodedRoles);
-    if (roles.length) {
-      req.user.roles = roles;
-      req.user.role = roles[0];
-    }
     return next();
   }catch(e){ return res.status(401).json({error:'Invalid token'}); }
 }
 
 function requireRole(role){
+  const expected = normalizeRoles(role);
   return (req,res,next)=>{
     const db = readDB();
     const u = db.usuarios.find(x=> x.id === (req.user && req.user.id));
     if(!u) return res.status(403).json({error:'No user'});
-    if(!hasAnyRole(u.role, role)) return res.status(403).json({error:'Forbidden'});
-    const roles = toRoleArray(u.role);
-    req.user = req.user || {};
-    req.user.roles = roles;
-    req.user.role = roles[0] || req.user.role;
+    const userRoles = normalizeRoles(u.role || u.roles);
+    if(!userRoles.length) return res.status(403).json({error:'Forbidden'});
+    if(expected.length && !hasRole(userRoles, expected)) return res.status(403).json({error:'Forbidden'});
+    req.userRoles = userRoles;
     next();
   };
 }
