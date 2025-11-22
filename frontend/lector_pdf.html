@@ -28,6 +28,13 @@
       padding: clamp(0.5rem, 2vw, 2rem);
     }
 
+    body.is-fullscreen {
+      background: #020712;
+      padding: clamp(0.35rem, 1vw, 1rem);
+      min-height: 100vh;
+      align-items: stretch;
+    }
+
     .reader-app {
       width: min(1400px, 96vw);
       display: flex;
@@ -38,6 +45,13 @@
       border-radius: 32px;
       padding: clamp(0.5rem, 2.5vw, 1.5rem);
       box-shadow: 0 35px 80px rgba(0, 0, 0, 0.35);
+    }
+
+    body.is-fullscreen .reader-app {
+      width: 100%;
+      min-height: 100vh;
+      border-radius: 24px;
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
     }
 
     .reader-header {
@@ -51,9 +65,20 @@
       box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15);
     }
 
+    body.is-fullscreen .reader-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
     .reader-header h1 {
       margin: 0;
       font-size: clamp(1.25rem, 2vw, 1.8rem);
+    }
+
+    body.is-fullscreen .page-shell {
+      border-radius: 22px;
+      min-height: 0;
     }
 
     .reader-header p {
@@ -61,11 +86,20 @@
       color: #5c6c7c;
     }
 
+    body.is-fullscreen .canvas-wrapper {
+      min-height: calc(100vh - 380px);
+    }
+
     .reader-main {
       display: grid;
       grid-template-columns: auto 1fr auto;
       gap: 1rem;
       align-items: stretch;
+    }
+
+    body.is-fullscreen .bottom-tools {
+      position: static;
+      border-radius: 16px;
     }
 
     .page-shell {
@@ -551,6 +585,7 @@
       };
       const COLORS = ['#ffeb3b', '#4caf50', '#f44336', '#2196f3'];
       const dom = {
+        readerApp: document.querySelector('.reader-app'),
         title: document.getElementById('bookTitle'),
         meta: document.getElementById('bookMeta'),
         back: document.getElementById('btnBack'),
@@ -1139,18 +1174,44 @@
         state.swipe.locked = false;
       }
 
+      function getFullscreenElement() {
+        return document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement || null;
+      }
+
+      function isReaderFullscreen() {
+        const active = getFullscreenElement();
+        return !!active && active === dom.readerApp;
+      }
+
+      function requestReaderFullscreen() {
+        const target = dom.readerApp || document.documentElement;
+        if (target.requestFullscreen) return target.requestFullscreen();
+        if (target.webkitRequestFullscreen) return target.webkitRequestFullscreen();
+        if (target.msRequestFullscreen) return target.msRequestFullscreen();
+        return Promise.resolve();
+      }
+
+      function exitReaderFullscreen() {
+        if (document.exitFullscreen) return document.exitFullscreen();
+        if (document.webkitExitFullscreen) return document.webkitExitFullscreen();
+        if (document.msExitFullscreen) return document.msExitFullscreen();
+        return Promise.resolve();
+      }
+
       function toggleFullscreen() {
-        if (!document.fullscreenElement) {
-          document.documentElement.requestFullscreen?.();
+        if (isReaderFullscreen()) {
+          exitReaderFullscreen();
         } else {
-          document.exitFullscreen?.();
+          requestReaderFullscreen();
         }
       }
 
-      function syncFullscreenIcon() {
-        const icon = dom.btnFullscreen.querySelector('i');
-        if (!icon) return;
-        icon.className = document.fullscreenElement ? 'bi bi-fullscreen-exit' : 'bi bi-arrows-fullscreen';
+      function syncFullscreenState() {
+        const active = isReaderFullscreen();
+        document.body.classList.toggle('is-fullscreen', active);
+        dom.readerApp?.classList.toggle('fullscreen-active', active);
+        const icon = dom.btnFullscreen?.querySelector('i');
+        if (icon) icon.className = active ? 'bi bi-fullscreen-exit' : 'bi bi-arrows-fullscreen';
       }
 
       function wireEvents() {
@@ -1181,7 +1242,9 @@
         dom.canvasWrapper?.addEventListener('touchmove', handleSwipeMove, { passive: false });
         dom.canvasWrapper?.addEventListener('touchend', handleSwipeEnd);
         dom.btnFullscreen?.addEventListener('click', toggleFullscreen);
-        document.addEventListener('fullscreenchange', syncFullscreenIcon);
+        document.addEventListener('fullscreenchange', syncFullscreenState);
+        document.addEventListener('webkitfullscreenchange', syncFullscreenState);
+        document.addEventListener('msfullscreenchange', syncFullscreenState);
         dom.btnSaveProgress?.addEventListener('click', () => saveProgress(true));
         document.addEventListener('keydown', (event) => {
           const typingOnPager = event.target === dom.pageInput;
@@ -1219,6 +1282,7 @@
           renderHighlights(state.pageNum);
         });
         resizeObserver.observe(dom.canvasWrapper);
+        syncFullscreenState();
       }
 
       async function bootstrap() {

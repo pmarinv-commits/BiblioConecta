@@ -39,37 +39,30 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #0f5c7f, #37b8de);
-      color: #fff;
+      background: linear-gradient(135deg, #fddcc0 60%, #fff6ee 100%);
+      color: #a05a2c;
       font-size: 1.6rem;
-      box-shadow: 0 10px 25px rgba(16, 90, 126, 0.35);
+      box-shadow: 0 10px 25px rgba(160, 90, 44, 0.15);
     }
+
 
     .hero-stage {
       position: relative;
       overflow: hidden;
-      background: linear-gradient(135deg, var(--hero-gradient-start), var(--hero-gradient-end));
-      color: #fff;
+      background: url('./public/assets/fondo-catalogo.jpg') center center/cover no-repeat;
+      color: #222;
       border-bottom-left-radius: 40px;
       border-bottom-right-radius: 40px;
       padding: 5rem 0 6rem;
     }
 
-    .hero-stage::after {
-      content: "";
-      position: absolute;
-      right: -15%;
-      top: -5%;
-      width: 55vw;
-      height: 55vw;
-      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.35), transparent 60%),
-        linear-gradient(120deg, var(--capsule-start), var(--capsule-end));
-      border-radius: 45% 55% 60% 40%;
-      opacity: 0.75;
-      filter: blur(0.5px);
-      transform: rotate(-8deg);
-      pointer-events: none;
+    .hero-stage h1,
+    .hero-stage p,
+    .hero-stage .hero-eyebrow {
+      color: #222 !important;
     }
+
+    /* Eliminado el semicírculo decorativo de la derecha */
 
     .hero-stage .hero-content {
       position: relative;
@@ -158,21 +151,42 @@
     }
 
     .btn-gradient {
-      background: linear-gradient(120deg, #1f6ea9, #5fe1ff);
+      background: #f7c59f;
       border: none;
       border-radius: 999px;
-      color: #0f2942;
+      color: #222;
       font-weight: 600;
       letter-spacing: 0.08em;
       padding: 0.85rem 1.5rem;
       text-transform: uppercase;
-      box-shadow: 0 14px 35px rgba(31, 110, 169, 0.45);
+      box-shadow: 0 8px 20px rgba(247, 197, 159, 0.25);
       transition: transform 200ms ease, box-shadow 200ms ease;
     }
 
     .btn-gradient:hover {
+      background: #f4b97d;
+      color: #111;
       transform: translateY(-2px);
-      box-shadow: 0 18px 45px rgba(31, 110, 169, 0.5);
+      box-shadow: 0 12px 30px rgba(247, 197, 159, 0.35);
+    }
+
+    .btn.btn-success,
+    .btn.btn-primary,
+    .btn.btn-warning,
+    .btn.btn-outline-primary,
+    .btn.btn-outline-secondary {
+      background: #f7c59f !important;
+      color: #222 !important;
+      border: none !important;
+      box-shadow: 0 4px 12px rgba(247, 197, 159, 0.18);
+    }
+    .btn.btn-success:hover,
+    .btn.btn-primary:hover,
+    .btn.btn-warning:hover,
+    .btn.btn-outline-primary:hover,
+    .btn.btn-outline-secondary:hover {
+      background: #f4b97d !important;
+      color: #111 !important;
     }
 
     .catalog-panel {
@@ -326,7 +340,9 @@
                   <label for="heroPassword" class="form-label text-muted small mb-1">Contraseña</label>
                   <div class="position-relative">
                     <input type="password" id="heroPassword" name="password" class="form-control pe-5" placeholder="" minlength="4" autocomplete="current-password" required />
-                    <i class="bi bi-eye-slash position-absolute top-50 end-0 me-3 translate-middle-y text-muted"></i>
+                    <button type="button" id="togglePassword" tabindex="-1" class="btn position-absolute top-50 end-0 me-3 translate-middle-y p-0 border-0 bg-transparent" style="line-height:1;">
+                      <i class="bi bi-eye-slash text-muted" id="togglePasswordIcon"></i>
+                    </button>
                   </div>
                 </div>
                 <button type="submit" class="btn btn-gradient">Aceptar</button>
@@ -396,153 +412,157 @@
     <div class="modal-dialog modal-dialog-centered">
       <form class="modal-content" id="requestModalForm">
         <div class="modal-header">
-          <div>
+          <div>          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          app.get('*', (req,res)=> res.sendFile(path.join(__dirname,'../frontend/catalogo.html')));          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });          const path = require('path');
+          
+          app.get('/', (_req, res) => {
+            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
+          });
             <p class="text-uppercase small text-muted mb-1">Solicitud física</p>
-            <h1 class="modal-title fs-5">Reservar ejemplar</h1>
-          </div>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <p class="text-muted small mb-1">Libro seleccionado</p>
-          <h2 class="h5 mb-2" id="requestBookTitle">—</h2>
-          <p class="text-muted small mb-3" id="requestBookType">—</p>
-          <div id="requestModalAlert" class="alert alert-danger d-none" role="alert"></div>
-          <input type="hidden" name="bookId" id="requestBookId" />
-          <div class="mb-3">
-            <label class="form-label">Nombre y apellido</label>
-            <input type="text" class="form-control" name="requesterName" id="requesterNameInput" required />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">RUT</label>
-            <input type="text" class="form-control" name="requesterRut" id="requesterRutInput" required />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Número telefónico</label>
-            <input type="tel" class="form-control" name="requesterPhone" id="requesterPhoneInput" required />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Correo institucional</label>
-            <input type="email" class="form-control" name="requesterEmail" id="requesterEmailInput" required />
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-primary" id="requestSubmitBtn">Enviar solicitud</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div class="modal fade" id="bookDescriptionModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header border-0 pb-0">
-          <div>
-            <p class="text-uppercase text-muted small mb-1">Ficha del libro</p>
-            <h1 class="modal-title fs-4" id="bookDescTitle">Título del libro</h1>
-          </div>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <div class="row g-3">
-            <div class="col-md-4">
-              <img src="" alt="Portada" class="img-fluid rounded-4 shadow-sm" id="bookDescCover" />
-            </div>
-            <div class="col-md-8">
-              <ul class="list-unstyled mb-4">
-                <li class="mb-2"><strong>Autor:</strong> <span id="bookDescAuthor">—</span></li>
-                <li class="mb-2"><strong>Fecha de publicación:</strong> <span id="bookDescDate">—</span></li>
-                <li class="mb-2"><strong>Género:</strong> <span id="bookDescGenre">—</span></li>
-                <li class="mb-2"><strong>Formato:</strong> <span class="badge rounded-pill text-bg-light" id="bookDescType">—</span></li>
-              </ul>
-              <p class="text-muted" id="bookDescSummary">Sin descripción disponible.</p>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer border-0 pt-0">
-          <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cerrar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="src/ui.js"></script>
-  <script>
-    const FALLBACK_COVER = '/public/assets/book_placeholder.svg';
-    const DIGITAL_READER_ROLES = ['alumno', 'profesor'];
-    const state = {
-      data: [],
-      fullData: [],
-      activeType: 'digital',
-      isAuthenticated: false,
-      role: null,
-      canReadDigital: false
-    };
-    const sessionManager = window.biblioconectaSession;
-
-    function persistRole(role) {
-      if (role) localStorage.setItem('sessionRole', role);
-    }
-
-    function getStoredRole(token) {
-      const cached = localStorage.getItem('sessionRole');
-      if (cached) return cached;
-      if (token && sessionManager?.decodeRoleFromToken) {
-        const decoded = sessionManager.decodeRoleFromToken(token);
-        if (decoded) {
-          persistRole(decoded);
-          return decoded;
-        }
-      }
-      return null;
-    }
-
-    function updateAuthState(token){
-      const activeToken = token || localStorage.getItem('token');
-      state.isAuthenticated = Boolean(activeToken);
-      state.role = state.isAuthenticated ? getStoredRole(activeToken) : null;
-      if (state.role) persistRole(state.role);
-      state.canReadDigital = state.isAuthenticated && DIGITAL_READER_ROLES.includes(state.role);
-    }
-
-    updateAuthState();
-
-    function handleLoginSuccess(payload){
-      if(!payload || !payload.token) return;
-      updateAuthState(payload.token);
-      if(sessionManager?.completeLogin){
-        sessionManager.completeLogin(payload);
-      } else {
-        localStorage.setItem('token', payload.token);
-        window.location.href = '/portal_alumno_static.html';
-      }
-    }
-
-    function cleanUrlAndPersist(params) {
-      const url = new URL(window.location.href);
-      params.forEach(key => url.searchParams.delete(key));
-      const newQuery = url.searchParams.toString();
-      const cleaned = url.pathname + (newQuery ? `?${newQuery}` : '');
-      window.history.replaceState({}, document.title, cleaned);
-    }
-
-    function bootstrapOAuthToken() {
-      const url = new URL(window.location.href);
-      const token = url.searchParams.get('token');
-      if (token) {
-        cleanUrlAndPersist(['token', 'auth']);
-        handleLoginSuccess({ token });
-        updateAuthState(token);
-        return true;
-      }
-      if (url.searchParams.get('auth') === 'fail') {
-        const feedbackBox = document.getElementById('loginFeedback');
-        if (feedbackBox) {
-          feedbackBox.textContent = 'El inicio de sesión con Google fue cancelado.';
-          feedbackBox.classList.remove('d-none');
-        }
-        cleanUrlAndPersist(['auth']);
+            <div>
       }
       return false;
     }
@@ -647,10 +667,10 @@
       const primaryClass = variant === 'solid'
         ? 'btn btn-primary rounded-pill fw-semibold'
         : 'btn btn-outline-primary rounded-pill fw-semibold';
-      const descriptionButton = `<button class="${primaryClass}" type="button" onclick="openBookDescription(${libro.id})">Ver descripción</button>`;
+      const descriptionButton = `<button class='${primaryClass}' type='button' onclick='openBookDescription(${libro.id})'>Ver descripción</button>`;
       const normalizedType = (libro.tipo || 'digital').toLowerCase();
       if (normalizedType === 'fisico') {
-        const requestButton = `<button class="btn btn-warning rounded-pill fw-semibold" onclick="openPhysicalRequest(${libro.id})">Solicitar en físico</button>`;
+        const requestButton = `<button class='btn btn-warning rounded-pill fw-semibold' onclick='openPhysicalRequest(${libro.id})'>Solicitar en físico</button>`;
         return `<div class="d-flex flex-wrap gap-2">${descriptionButton}${requestButton}</div>`;
       }
       if (!state.canReadDigital) {
@@ -659,21 +679,21 @@
           : 'Inicia sesión para leer';
         const loginAttrs = state.isAuthenticated
           ? 'disabled'
-          : 'onclick="promptLoginForDigital()"';
-        const loginButton = `<button class="btn btn-success rounded-pill fw-semibold" type="button" ${loginAttrs}>${loginCopy}</button>`;
+          : "onclick='promptLoginForDigital()'";
+        const loginButton = `<button class='btn btn-success rounded-pill fw-semibold' type='button' ${loginAttrs}>${loginCopy}</button>`;
         return `<div class="d-flex flex-wrap gap-2">${descriptionButton}${loginButton}</div>`;
       }
       const hasPdf = Boolean(libro.pdf);
       const readLabel = hasPdf ? 'Leer ahora' : 'PDF no disponible';
       const readAttrs = hasPdf
-        ? `onclick="redirectToPortal(${libro.id})"`
-        : 'disabled title="Aún no se ha cargado el PDF"';
-      const readButton = `<button class="btn btn-success rounded-pill fw-semibold" type="button" ${readAttrs}>${readLabel}</button>`;
-      return `<div class="d-flex flex-wrap gap-2">${descriptionButton}${readButton}</div>`;
+        ? `onclick='redirectToPortal(${libro.id})'`
+        : "disabled title='Aún no se ha cargado el PDF'";
+      const readButton = `<button class='btn btn-success rounded-pill fw-semibold' type='button' ${readAttrs}>${readLabel}</button>`;
+      return `<div class='d-flex flex-wrap gap-2'>${descriptionButton}${readButton}</div>`;
     }
 
     function renderWelcomeActions(libro) {
-      const descriptionButton = `<button class="btn btn-primary rounded-pill fw-semibold" type="button" onclick="openBookDescription(${libro.id})">Ver descripción</button>`;
+      const descriptionButton = `<button class='btn btn-primary rounded-pill fw-semibold' type='button' onclick='openBookDescription(${libro.id})'>Ver descripción</button>`;
       return `<div class="d-flex flex-wrap gap-2">${descriptionButton}</div>`;
     }
 
@@ -802,6 +822,20 @@
         feedback.classList.remove('d-none');
       }
     });
+
+    // Mostrar/ocultar contraseña
+    const passwordInput = document.getElementById('heroPassword');
+    const togglePasswordBtn = document.getElementById('togglePassword');
+    const togglePasswordIcon = document.getElementById('togglePasswordIcon');
+    if (passwordInput && togglePasswordBtn && togglePasswordIcon) {
+      togglePasswordBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        const isHidden = passwordInput.type === 'password';
+        passwordInput.type = isHidden ? 'text' : 'password';
+        togglePasswordIcon.classList.toggle('bi-eye', isHidden);
+        togglePasswordIcon.classList.toggle('bi-eye-slash', !isHidden);
+      });
+    }
 
     loadCatalog('digital');
   </script>
