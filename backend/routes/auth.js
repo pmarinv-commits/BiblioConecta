@@ -1,10 +1,10 @@
 const express = require('express');
 const passport = require('passport');
-const { readDB, saveDB } = require('../services/db_json');
-const { findUserByEmail } = require('../services/users');
 const { ensureRoleArray } = require('../services/roles');
-const { signUserToken, serializeUser } = require('../services/token');
+const { signUserToken } = require('../services/token');
 const { verifyToken } = require('../middleware/auth');
+const { appendLogEntry } = require('../services/logs');
+const { findPgUserByEmail, findPgUserById, updatePgUserLastLogin, serializeUser } = require('../services/users');
 
 const router = express.Router();
 
@@ -32,34 +32,42 @@ function ensureGoogleStudent(req, res, next) {
   next();
 }
 
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
   const { email, password } = sanitizeCredentials(req);
   if (!email || !password) {
     return res.status(400).json({ error: 'Correo y contraseña obligatorios' });
   }
-  const db = readDB();
-  const user = findUserByEmail(db.usuarios || [], email);
-  if (!user) {
-    return res.status(401).json({ error: 'Credenciales inválidas' });
+  try {
+    const user = await findPgUserByEmail(email);
+    if (!user) {
+      return res.status(401).json({ error: 'Credenciales inválidas' });
+    }
+    const isPasswordValid = String(user.password) === password || String(user.rut) === password;
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Credenciales inválidas' });
+    }
+    user.role = ensureRoleArray(user.role || user.roles || ['alumno']);
+    const lastLogin = new Date();
+    await updatePgUserLastLogin(user.id, lastLogin);
+    user.last_login = lastLogin.toISOString();
+    appendLogEntry({ usuario: user.email, action: 'login', at: user.last_login });
+    const token = signUserToken(user);
+    res.json({ token, user: serializeUser(user) });
+  } catch (error) {
+    console.error('[auth] Error al iniciar sesión', error);
+    res.status(500).json({ error: 'No se pudo iniciar sesión' });
   }
-  const isPasswordValid = String(user.password) === password || String(user.rut) === password;
-  if (!isPasswordValid) {
-    return res.status(401).json({ error: 'Credenciales inválidas' });
-  }
-  user.role = ensureRoleArray(user.role || user.roles || ['alumno']);
-  user.last_login = new Date().toISOString();
-  db.logs = db.logs || [];
-  db.logs.push({ usuario: user.email, action: 'login', at: user.last_login });
-  saveDB(db);
-  const token = signUserToken(user);
-  res.json({ token, user: serializeUser(user) });
 });
 
-router.get('/me', verifyToken, (req, res) => {
-  const db = readDB();
-  const user = (db.usuarios || []).find(entry => Number(entry.id) === Number(req.user.id));
-  if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
-  res.json({ user: serializeUser(user) });
+router.get('/me', verifyToken, async (req, res) => {
+  try {
+    const user = await findPgUserById(req.user?.id);
+    if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+    res.json({ user: serializeUser(user) });
+  } catch (error) {
+    console.error('[auth] Error al obtener perfil', error);
+    res.status(500).json({ error: 'No se pudo obtener el perfil' });
+  }
 });
 
 router.get('/google', ensureGoogleStudent, passport.authenticate('google-student', {

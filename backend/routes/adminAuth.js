@@ -1,9 +1,9 @@
 const express = require('express');
 const passport = require('passport');
-const { readDB, saveDB } = require('../services/db_json');
-const { findUserByEmail } = require('../services/users');
 const { ensureRoleArray, hasRole } = require('../services/roles');
-const { signUserToken, serializeUser } = require('../services/token');
+const { signUserToken } = require('../services/token');
+const { appendLogEntry } = require('../services/logs');
+const { findPgUserByEmail, updatePgUserLastLogin, serializeUser } = require('../services/users');
 
 const router = express.Router();
 
@@ -31,29 +31,33 @@ function ensureGoogleAdmin(req, res, next) {
   next();
 }
 
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
   const { email, password } = sanitizeCredentials(req);
   if (!email || !password) {
     return res.status(400).json({ error: 'Correo y contraseña obligatorios' });
   }
-  const db = readDB();
-  const user = findUserByEmail(db.usuarios || [], email);
-  if (!user) return res.status(401).json({ error: 'Credenciales inválidas' });
-  const roles = ensureRoleArray(user.role || user.roles || ['alumno']);
-  if (!hasRole(roles, ['admin'])) {
-    return res.status(403).json({ error: 'No autorizado' });
+  try {
+    const user = await findPgUserByEmail(email);
+    if (!user) return res.status(401).json({ error: 'Credenciales inválidas' });
+    const roles = ensureRoleArray(user.role || user.roles || ['alumno']);
+    if (!hasRole(roles, ['admin'])) {
+      return res.status(403).json({ error: 'No autorizado' });
+    }
+    const isPasswordValid = String(user.password) === password || String(user.rut) === password;
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Credenciales inválidas' });
+    }
+    user.role = roles;
+    const lastLogin = new Date();
+    await updatePgUserLastLogin(user.id, lastLogin);
+    user.last_login = lastLogin.toISOString();
+    appendLogEntry({ usuario: user.email, action: 'admin_login', at: user.last_login });
+    const token = signUserToken(user);
+    res.json({ token, user: serializeUser(user) });
+  } catch (error) {
+    console.error('[adminAuth] Error al iniciar sesión', error);
+    res.status(500).json({ error: 'No se pudo iniciar sesión' });
   }
-  const isPasswordValid = String(user.password) === password || String(user.rut) === password;
-  if (!isPasswordValid) {
-    return res.status(401).json({ error: 'Credenciales inválidas' });
-  }
-  user.role = roles;
-  user.last_login = new Date().toISOString();
-  db.logs = db.logs || [];
-  db.logs.push({ usuario: user.email, action: 'admin_login', at: user.last_login });
-  saveDB(db);
-  const token = signUserToken(user);
-  res.json({ token, user: serializeUser(user) });
 });
 
 router.get('/google', ensureGoogleAdmin, passport.authenticate('google-admin', {

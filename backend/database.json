@@ -464,6 +464,16 @@
       "usuario": "brianftxd3@gmail.com",
       "action": "login",
       "at": "2025-11-19T03:47:24.534Z"
+    },
+    {
+      "usuario": "ggarridot@alumnos.ceduc.cl",
+      "action": "login",
+      "at": "2025-11-22T03:01:59.358Z"
+    },
+    {
+      "usuario": "ggarridot@alumnos.ceduc.cl",
+      "action": "admin_login",
+      "at": "2025-11-22T03:03:06.225Z"
     }
   ],
   "subrayados": [],
