@@ -662,14 +662,13 @@
 
     const heroGoogleBtn = document.getElementById('heroGoogleBtn');
     if (heroGoogleBtn) {
-      heroGoogleBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        var backendUrl = isLocal
-          ? 'http://localhost:3001/api/auth/google'
-          : window.location.origin + '/api/auth/google';
-        heroGoogleBtn.setAttribute('href', backendUrl);
-        window.location.href = backendUrl;
+      var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      var backendUrl = isLocal
+        ? 'http://localhost:3001/api/auth/google'
+        : window.location.origin + '/api/auth/google';
+      heroGoogleBtn.setAttribute('href', backendUrl);
+      heroGoogleBtn.addEventListener('click', function(e) {
+        // Permite el comportamiento normal del enlace
       });
     }
 
