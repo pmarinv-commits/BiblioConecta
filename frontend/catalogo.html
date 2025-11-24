@@ -362,23 +362,22 @@
                 </div>
                 <button type="submit" class="btn btn-gradient">Aceptar</button>
                 <div class="google-divider"><span>o</span></div>
-                <button type="button" class="google-btn w-100" id="heroGoogleBtn">
-                  <a href="#" class="google-btn w-100 d-flex align-items-center justify-content-center gap-2" id="heroGoogleBtn" style="text-decoration:none;">
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="18" height="18" />
-                    <span>Continuar con Google</span>
-                  </a>
-                  <script>
-                    // Enlace dinámico para Google OAuth
-                    (function() {
-                      var googleBtn = document.getElementById('heroGoogleBtn');
-                      if (!googleBtn) return;
-                      var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-                      var backendUrl = isLocal
-                        ? 'http://localhost:3001/api/auth/google'
-                        : window.location.origin + '/api/auth/google';
-                      googleBtn.setAttribute('href', backendUrl);
-                    })();
-                  </script>
+                <a href="#" class="google-btn w-100 d-flex align-items-center justify-content-center gap-2" id="heroGoogleBtn" style="text-decoration:none;">
+                  <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="18" height="18" />
+                  <span>Continuar con Google</span>
+                </a>
+                <script>
+                  // Enlace dinámico para Google OAuth
+                  (function() {
+                    var googleBtn = document.getElementById('heroGoogleBtn');
+                    if (!googleBtn) return;
+                    var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                    var backendUrl = isLocal
+                      ? 'http://localhost:3001/api/auth/google'
+                      : window.location.origin + '/api/auth/google';
+                    googleBtn.setAttribute('href', backendUrl);
+                  })();
+                </script>
                 <a href="#" class="text-decoration-none text-primary fw-semibold small">¿Olvidó su Contraseña?</a>
                 <p id="loginFeedback" class="small mb-0 text-danger d-none">Correo o contraseña inválidos.</p>
               </form>
