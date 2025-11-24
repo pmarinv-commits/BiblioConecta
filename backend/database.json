@@ -52,7 +52,7 @@
         "alumno"
       ],
       "password": "pablo123",
-      "last_login": "2025-11-24T02:45:24.073Z"
+      "last_login": "2025-11-24T02:49:51.117Z"
     }
   ],
   "libros": [
@@ -522,6 +522,11 @@
       "usuario": "pmarinv@alumnos.ceduc.cl",
       "action": "login",
       "at": "2025-11-24T02:45:24.073Z"
+    },
+    {
+      "usuario": "pmarinv@alumnos.ceduc.cl",
+      "action": "login",
+      "at": "2025-11-24T02:49:51.117Z"
     }
   ],
   "subrayados": [],
