@@ -1212,6 +1212,22 @@
         dom.readerApp?.classList.toggle('fullscreen-active', active);
         const icon = dom.btnFullscreen?.querySelector('i');
         if (icon) icon.className = active ? 'bi bi-fullscreen-exit' : 'bi bi-arrows-fullscreen';
+        // Ajustar variables CSS para que el canvas ocupe el área máxima
+        if (dom.canvasWrapper) {
+          if (active) {
+            dom.canvasWrapper.style.setProperty('--page-width', `${window.innerWidth - 80}px`);
+            dom.canvasWrapper.style.setProperty('--page-height', `${window.innerHeight - 180}px`);
+          } else {
+            dom.canvasWrapper.style.setProperty('--page-width', 'min(85vw, 900px)');
+            dom.canvasWrapper.style.setProperty('--page-height', 'min(70vh, 1200px)');
+            // Limpiar baseScale para forzar recálculo de escala al salir de fullscreen
+            state.baseScale = null;
+          }
+        }
+        // Redibujar la página actual
+        if (state.pdfDoc && typeof state.pageNum === 'number') {
+          queueRenderPage(state.pageNum);
+        }
       }
 
       function wireEvents() {
