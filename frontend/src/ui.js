@@ -59,22 +59,44 @@
   const ctaCatalog = document.getElementById('ctaCatalog');
   if (ctaCatalog) ctaCatalog.addEventListener('click', ()=> window.location.href='/catalogo.html');
 
-  const loginBtn = document.getElementById('loginBtn');
-  if (loginBtn) {
-    loginBtn.addEventListener('click', async ()=> {
-      const emailInput = document.getElementById('email');
-      const passInput = document.getElementById('password');
-      const email = emailInput ? emailInput.value.trim() : '';
-      const password = passInput ? passInput.value : '';
-      if(!email || !password) return alert('Correo y contraseña requeridos');
-      const res = await fetch('/api/auth/login', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email,password})});
-      if(!res.ok) return alert('Login fallido');
-      const payload = await res.json();
-      if(window.biblioconectaSession?.completeLogin){
-        window.biblioconectaSession.completeLogin(payload);
-      } else {
-        localStorage.setItem('token', payload.token);
-        window.location.href = '/portal_alumno_static.html';
+  const loginForm = document.getElementById('heroLoginForm');
+  const feedback = document.getElementById('loginFeedback');
+  if (loginForm) {
+    loginForm.addEventListener('submit', async event => {
+      event.preventDefault();
+      if (feedback) feedback.classList.add('d-none');
+      const email = document.getElementById('heroEmail').value.trim();
+      const password = document.getElementById('heroPassword').value;
+      if (!email || !password) {
+        if (feedback) {
+          feedback.textContent = 'Complete ambos campos.';
+          feedback.classList.remove('d-none');
+        } else {
+          alert('Complete ambos campos.');
+        }
+        return;
+      }
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        if (!res.ok) throw new Error('Credenciales inválidas');
+        const payload = await res.json();
+        if(window.biblioconectaSession?.completeLogin){
+          window.biblioconectaSession.completeLogin(payload);
+        } else {
+          localStorage.setItem('token', payload.token);
+          window.location.href = '/portal_alumno_static.html';
+        }
+      } catch (err) {
+        if (feedback) {
+          feedback.textContent = 'Correo o contraseña inválidos.';
+          feedback.classList.remove('d-none');
+        } else {
+          alert('Correo o contraseña inválidos.');
+        }
       }
     });
   }

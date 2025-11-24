@@ -1,6 +1,21 @@
 <!doctype html>
 <html lang="es">
 <head>
+    <script>
+      // Detecta token en la URL y lo guarda en localStorage, luego limpia la URL
+      (function() {
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get('token');
+        if (token) {
+          localStorage.setItem('token', token);
+          // Limpia el parámetro de la URL sin recargar desde el servidor
+          const cleanUrl = window.location.origin + window.location.pathname;
+          window.history.replaceState({}, document.title, cleanUrl);
+          // Redirige directo al portal del alumno
+          window.location.href = '/portal_alumno_static.html';
+        }
+      })();
+    </script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Biblioconecta · Plan Lector Digital</title>
@@ -348,9 +363,10 @@
                 <button type="submit" class="btn btn-gradient">Aceptar</button>
                 <div class="google-divider"><span>o</span></div>
                 <button type="button" class="google-btn w-100" id="heroGoogleBtn">
-                  <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="18" height="18" />
-                  <span>Continuar con Google</span>
-                </button>
+                  <a href="http://localhost:3001/api/auth/google" class="google-btn w-100 d-flex align-items-center justify-content-center gap-2" id="heroGoogleBtn" style="text-decoration:none;">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="18" height="18" />
+                    <span>Continuar con Google</span>
+                  </a>
                 <a href="#" class="text-decoration-none text-primary fw-semibold small">¿Olvidó su Contraseña?</a>
                 <p id="loginFeedback" class="small mb-0 text-danger d-none">Correo o contraseña inválidos.</p>
               </form>
@@ -412,157 +428,8 @@
     <div class="modal-dialog modal-dialog-centered">
       <form class="modal-content" id="requestModalForm">
         <div class="modal-header">
-          <div>          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          app.get('*', (req,res)=> res.sendFile(path.join(__dirname,'../frontend/catalogo.html')));          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });          const path = require('path');
-          
-          app.get('/', (_req, res) => {
-            res.sendFile(path.join(__dirname, '../frontend/catalogo.html'));
-          });
-            <p class="text-uppercase small text-muted mb-1">Solicitud física</p>
-            <div>
+          <p class="text-uppercase small text-muted mb-1">Solicitud física</p>
+          <div>
       }
       return false;
     }
@@ -667,10 +534,10 @@
       const primaryClass = variant === 'solid'
         ? 'btn btn-primary rounded-pill fw-semibold'
         : 'btn btn-outline-primary rounded-pill fw-semibold';
-      const descriptionButton = `<button class='${primaryClass}' type='button' onclick='openBookDescription(${libro.id})'>Ver descripción</button>`;
+      const descriptionButton = `<button class='${primaryClass}' type='button' onclick='openBookDescription("${libro.id}")'>Ver descripción</button>`;
       const normalizedType = (libro.tipo || 'digital').toLowerCase();
       if (normalizedType === 'fisico') {
-        const requestButton = `<button class='btn btn-warning rounded-pill fw-semibold' onclick='openPhysicalRequest(${libro.id})'>Solicitar en físico</button>`;
+        const requestButton = `<button class='btn btn-warning rounded-pill fw-semibold' onclick='openPhysicalRequest("${libro.id}")'>Solicitar en físico</button>`;
         return `<div class="d-flex flex-wrap gap-2">${descriptionButton}${requestButton}</div>`;
       }
       if (!state.canReadDigital) {
@@ -686,14 +553,14 @@
       const hasPdf = Boolean(libro.pdf);
       const readLabel = hasPdf ? 'Leer ahora' : 'PDF no disponible';
       const readAttrs = hasPdf
-        ? `onclick='redirectToPortal(${libro.id})'`
+        ? `onclick='redirectToPortal("${libro.id}")'`
         : "disabled title='Aún no se ha cargado el PDF'";
       const readButton = `<button class='btn btn-success rounded-pill fw-semibold' type='button' ${readAttrs}>${readLabel}</button>`;
       return `<div class='d-flex flex-wrap gap-2'>${descriptionButton}${readButton}</div>`;
     }
 
     function renderWelcomeActions(libro) {
-      const descriptionButton = `<button class='btn btn-primary rounded-pill fw-semibold' type='button' onclick='openBookDescription(${libro.id})'>Ver descripción</button>`;
+      const descriptionButton = `<button class='btn btn-primary rounded-pill fw-semibold' type='button' onclick='openBookDescription("${libro.id}")'>Ver descripción</button>`;
       return `<div class="d-flex flex-wrap gap-2">${descriptionButton}</div>`;
     }
 
@@ -784,7 +651,7 @@
     const heroGoogleBtn = document.getElementById('heroGoogleBtn');
     if (heroGoogleBtn) {
       heroGoogleBtn.addEventListener('click', () => {
-        window.location.href = '/api/auth/google';
+        window.location.href = 'http://localhost:3001/api/auth/google';
       });
     }
 
@@ -839,5 +706,6 @@
 
     loadCatalog('digital');
   </script>
+  <script src="./src/ui.js"></script>
 </body>
 </html>

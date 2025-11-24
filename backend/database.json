@@ -48,8 +48,11 @@
       "nombre": "Pablo Marín",
       "rut": "pmarinv",
       "email": "pmarinv@alumnos.ceduc.cl",
-      "role": "alumno",
-      "password": "pablo123"
+      "role": [
+        "alumno"
+      ],
+      "password": "pablo123",
+      "last_login": "2025-11-24T02:45:24.073Z"
     }
   ],
   "libros": [
@@ -474,6 +477,51 @@
       "usuario": "ggarridot@alumnos.ceduc.cl",
       "action": "admin_login",
       "at": "2025-11-22T03:03:06.225Z"
+    },
+    {
+      "usuario": "pmarinv@alumnos.ceduc.cl",
+      "action": "login",
+      "at": "2025-11-23T20:39:17.493Z"
+    },
+    {
+      "usuario": "pmarinv@alumnos.ceduc.cl",
+      "action": "login",
+      "at": "2025-11-23T20:39:47.481Z"
+    },
+    {
+      "usuario": "pmarinv@alumnos.ceduc.cl",
+      "action": "login",
+      "at": "2025-11-24T01:15:01.758Z"
+    },
+    {
+      "usuario": "pmarinv@alumnos.ceduc.cl",
+      "action": "login",
+      "at": "2025-11-24T02:35:21.222Z"
+    },
+    {
+      "usuario": "pmarinv@alumnos.ceduc.cl",
+      "action": "login",
+      "at": "2025-11-24T02:39:41.708Z"
+    },
+    {
+      "usuario": "pmarinv@alumnos.ceduc.cl",
+      "action": "login",
+      "at": "2025-11-24T02:40:38.519Z"
+    },
+    {
+      "usuario": "pmarinv@alumnos.ceduc.cl",
+      "action": "login",
+      "at": "2025-11-24T02:43:11.148Z"
+    },
+    {
+      "usuario": "pmarinv@alumnos.ceduc.cl",
+      "action": "login",
+      "at": "2025-11-24T02:44:29.676Z"
+    },
+    {
+      "usuario": "pmarinv@alumnos.ceduc.cl",
+      "action": "login",
+      "at": "2025-11-24T02:45:24.073Z"
     }
   ],
   "subrayados": [],
