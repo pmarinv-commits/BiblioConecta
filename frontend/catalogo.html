@@ -486,14 +486,14 @@
 
       filtered.forEach(libro => {
         const col = document.createElement('div');
-        col.className = 'col-12 col-md-6 col-xl-4';
+        col.className = 'col-12 col-md-6 col-xl-3';
         col.innerHTML = `
-          <article class="card catalog-card h-100">
-            <img src="${getCover(libro)}" alt="Portada de ${libro.titulo || 'libro'}" class="w-100" />
-            <div class="card-body">
-              <span class="badge bg-light text-dark mb-2 text-uppercase">${(libro.tipo || 'digital')}</span>
-              <h4 class="h5">${libro.titulo || 'Título no disponible'}</h4>
-              <p class="text-muted mb-1">${libro.autor || 'Autor no especificado'}</p>
+          <article class="welcome-card h-100 p-3">
+            <img src="${getCover(libro)}" alt="Portada de ${libro.titulo || 'libro'}" />
+            <div class="card-body px-0">
+              <span class="badge bg-light text-dark mb-2 text-uppercase">${libro.tipo || 'digital'}</span>
+              <h3 class="h5">${libro.titulo || 'Sin título'}</h3>
+              <p class="text-muted small mb-2">${libro.autor || 'Autor no especificado'}</p>
               <p class="small text-secondary clamped-text">${libro.descripcion || ''}</p>
               ${renderActionButtons(libro, 'outline')}
             </div>
