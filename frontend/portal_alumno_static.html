@@ -7,6 +7,37 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <style>
+                        .logo-pill {
+                            margin-top: 7px;
+                        }
+                .logo-pill {
+                    width: 50px;
+                    height: 50px;
+                    border-radius: 14px;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: #fff !important;
+                    color: #a05a2c;
+                    font-size: 1.6rem;
+                    box-shadow: 0 10px 25px rgba(160, 90, 44, 0.15);
+                }
+        .branding-bar {
+            background: #f6c18b !important;
+            color: #222 !important;
+            height: 80px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #e5b47a;
+            box-shadow: 0 10px 30px rgba(15, 41, 66, 0.08);
+        }
+        .branding-bar .fw-bold,
+        .branding-bar .fs-5,
+        .branding-bar .text-white-50,
+        .branding-bar .small {
+            color: #222 !important;
+        }
         :root {
             --gradient-start: #2c3e50;
             --gradient-mid: #87ceeb;
@@ -19,9 +50,7 @@
         body {
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-mid) 50%, var(--gradient-end) 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 25s ease infinite;
+            background: #fff !important;
         }
         @keyframes gradientShift {
             0% { background-position: 0% 50%; }
@@ -80,21 +109,33 @@
             font-weight: 600;
         }
         .book-card {
-            background: linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(37, 150, 190, 0.8), rgba(212, 184, 150, 0.75));
+            background: #fbe3c1 !important;
             border-radius: 18px;
             padding: 18px;
-            color: #fff;
+            color: #222 !important;
             margin-bottom: 18px;
             box-shadow: 0 18px 40px rgba(37, 150, 190, 0.35);
             display: flex;
             gap: 1.5rem;
             align-items: stretch;
         }
+        .book-card h6,
+        .book-card .badge,
+        .book-card .progress-pill,
+        .book-card .book-card-description,
+        .book-card small {
+            color: #222 !important;
+        }
         .book-card .badge {
-            background: rgba(255, 255, 255, 0.22);
+            background: #fff !important;
+            color: #222 !important;
             border: 1px solid transparent;
             text-transform: uppercase;
             letter-spacing: 0.04em;
+        }
+        .book-card .progress-pill {
+            background: #fff !important;
+            color: #222 !important;
         }
         .book-card-cover {
             flex: 0 0 120px;
@@ -158,19 +199,35 @@
         }
         .book-card-actions .btn-outline-light-alt {
             padding: 0.5rem 1.5rem;
+            background: #f6c18b !important;
+            color: #222 !important;
+            border: none !important;
+            box-shadow: 0 4px 12px rgba(246, 193, 139, 0.18);
+            font-weight: 600;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            transition: background 0.2s, color 0.2s;
+        }
+        .book-card-actions .btn-outline-light-alt:hover {
+            background: #e5b47a !important;
+            color: #111 !important;
         }
         .btn-ghost-light {
             border-radius: 999px;
-            border: 2px solid rgba(255, 255, 255, 0.65);
-            background: transparent;
-            color: #fff;
+            background: #f6c18b !important;
+            color: #222 !important;
+            border: none !important;
+            box-shadow: 0 4px 12px rgba(246, 193, 139, 0.18);
             font-weight: 600;
-            padding: 0.45rem 1.25rem;
-            transition: background 0.2s ease;
+            padding: 0.5rem 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            transition: background 0.2s, color 0.2s;
         }
         .btn-ghost-light:hover {
-            background: rgba(255, 255, 255, 0.12);
-            color: #fff;
+            background: #e5b47a !important;
+            color: #111 !important;
         }
         .btn-gradient {
             background: linear-gradient(135deg, var(--accent-dark), var(--accent-blue));
@@ -271,33 +328,19 @@
 <body>
     <!-- Barra Biblioconecta -->
     <section class="branding-bar py-3">
-        <div class="container-fluid px-4 d-flex flex-wrap align-items-center gap-3 justify-content-between">
+        <div class="container d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3" style="height:80px;">
             <div class="d-flex align-items-center gap-3">
-                <div class="dropdown">
-                    <button class="menu-button dropdown-toggle" id="statsMenuBtn" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Abrir menú principal">
-                        <i class="bi bi-list"></i>
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-end shadow border-0 p-3" aria-labelledby="statsMenuBtn">
-                        <p class="text-muted small mb-2">Accesos rápidos</p>
-                        <button type="button" class="btn btn-outline-primary w-100 mb-2" data-action="view-stats">
-                            <i class="bi bi-graph-up me-2"></i>Ver estadísticas
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary w-100" data-action="view-highlights">
-                            <i class="bi bi-highlighter me-2"></i>Mis subrayados
-                        </button>
-                    </div>
-                </div>
-                <i class="bi bi-book"></i>
-                <div>
-                    <div class="fw-bold fs-5">Biblioconecta</div>
-                    <div class="text-white-50 small">Plan Lector Digital - Acceso libre a recursos académicos</div>
+                <span class="logo-pill" aria-hidden="true"><i class="bi bi-book"></i></span>
+                <div class="text-dark">
+                    <h1 class="h4 mb-0 fw-bold">Biblioconecta</h1>
+                    <p class="mb-0 small text-muted">Plan Lector Digital - Acceso libre a recursos académicos</p>
                 </div>
             </div>
             <div class="dropdown login-dropdown ms-auto">
                 <button class="btn btn-link text-white text-decoration-none dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
                     <span class="text-white-50">Bienvenid@</span>
-                    <span class="fw-bold text-uppercase" id="studentName">JUAN PÉREZ</span>
-                    <span class="avatar-circle" id="studentAvatar">J</span>
+                    <span class="fw-bold text-uppercase" id="studentName"></span>
+                    <span class="avatar-circle" id="studentAvatar"></span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li><a class="dropdown-item" href="#" data-action="logout"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
@@ -312,7 +355,7 @@
             <div class="col-12 reading-feed">
                 <article class="glass-card p-4">
                     <header class="mb-3">
-                        <h5 class="mb-0"><i class="bi bi-journal-text text-primary me-2"></i>Lecturas asignadas</h5>
+                        <h5 class="mb-0"><i class="bi bi-journal-text text-primary me-2"></i>Plan lector</h5>
                         <small class="text-muted">Disfruta tus libros digitales y haz clic en "Leer" para abrir el lector.</small>
                     </header>
                     <div id="listasAsignadas" class="d-flex flex-column gap-4"></div>
@@ -430,64 +473,7 @@
         // Reemplaza este bloque con tus fetch/axios y loops.
         const DASHBOARD_ENDPOINT = '/api/student/dashboard';
         const FALLBACK_COVER = '/public/assets/book_placeholder.svg';
-        const sampleData = {
-            estudiante: {
-                nombre: 'Juan Pérez',
-                curso: '3° Medio B'
-            },
-            stats: {
-                lecturasActivas: 0,
-                librosPorLeer: 12,
-                librosLeidos: 4,
-                subrayados: 28
-            },
-            subrayados: [
-                {
-                    id: 1,
-                    libro: 'El principito',
-                    pagina: 24,
-                    nota: '“Lo esencial es invisible a los ojos”. Recordar para la reflexión final.',
-                    fecha: '2025-11-12T09:24:00Z'
-                },
-                {
-                    id: 2,
-                    libro: '1984',
-                    pagina: 138,
-                    nota: 'Concepto de doblepensar explicado en detalle.',
-                    fecha: '2025-11-10T18:02:00Z'
-                }
-            ],
-            listas: [
-                {
-                    id: 'demo',
-                    nombre: 'Plan lector demostración',
-                    descripcion: 'Ejemplo de cómo se mostrarán tus lecturas asignadas.',
-                    curso: '3° Medio B',
-                    libros: [
-                        {
-                            id: 101,
-                            titulo: 'El principito',
-                            autor: 'Antoine de Saint-Exupéry',
-                            genero: 'Narrativa',
-                            descripcion: 'Un clásico sobre la amistad y la imaginación.',
-                            progreso: 45,
-                            portada: '/public/assets/book_placeholder.svg',
-                            pdf: '/uploads/demo/el-principito.pdf'
-                        },
-                        {
-                            id: 102,
-                            titulo: '1984',
-                            autor: 'George Orwell',
-                            genero: 'Distopía',
-                            descripcion: 'Vigilia constante del Gran Hermano.',
-                            progreso: 10,
-                            portada: '',
-                            pdf: ''
-                        }
-                    ]
-                }
-            ]
-        };
+
 
         const PROGRESS_KEY = 'readingProgress';
         const CURRENT_BOOK_KEY = 'currentReading';

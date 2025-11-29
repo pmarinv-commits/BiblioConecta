@@ -1,7 +1,7 @@
 const { Strategy: GoogleStrategy } = require('passport-google-oauth20');
-const { readDB, saveDB } = require('./db_json');
-const { computeNextId, findUserByEmail } = require('./users');
+const { findPgUserByEmail, createPgUser, updatePgUserLastLogin, findPgUserById } = require('./users');
 const { ensureRoleArray, normalizeRoles } = require('./roles');
+const { appendLogEntry } = require('./logs');
 
 function registerGoogleStrategy(passport, strategyName, options = {}) {
   const { clientID, clientSecret, callbackURL, requireRoles, defaultRoles = ['alumno'] } = options;
@@ -15,17 +15,14 @@ function registerGoogleStrategy(passport, strategyName, options = {}) {
       const email = (profile.emails && profile.emails[0] && profile.emails[0].value || '').toLowerCase();
       if (!email) return done(null, false, { message: 'Google no entregó correo.' });
 
-      const db = readDB();
-      db.usuarios = db.usuarios || [];
-      let user = findUserByEmail(db.usuarios, email);
-      const now = new Date().toISOString();
+      let user = await findPgUserByEmail(email);
+      const now = new Date();
 
       if (!user) {
         if (requireRoles && requireRoles.length) {
           return done(null, false, { message: 'Cuenta no autorizada.' });
         }
-        user = {
-          id: computeNextId(db.usuarios),
+        user = await createPgUser({
           nombre: profile.displayName || 'Usuario Google',
           rut: profile.id || email,
           email,
@@ -33,11 +30,11 @@ function registerGoogleStrategy(passport, strategyName, options = {}) {
           role: ensureRoleArray(defaultRoles),
           last_login: now,
           created_at: now
-        };
-        db.usuarios.push(user);
+        });
       } else {
+        // Actualizar roles y last_login si corresponde
         user.role = ensureRoleArray(user.role || user.roles || defaultRoles);
-        user.last_login = now;
+        await updatePgUserLastLogin(user.id, now);
       }
 
       if (requireRoles && requireRoles.length) {
@@ -47,9 +44,8 @@ function registerGoogleStrategy(passport, strategyName, options = {}) {
         if (!allowed) return done(null, false, { message: 'Cuenta no autorizada.' });
       }
 
-      db.logs = db.logs || [];
-      db.logs.push({ usuario: email, action: requireRoles ? 'admin_login' : 'login', at: now });
-      saveDB(db);
+      // Registrar log de login
+      await appendLogEntry({ usuario: email, action: requireRoles ? 'admin_login' : 'login', at: now });
       done(null, user);
     } catch (error) {
       done(error);
@@ -59,10 +55,9 @@ function registerGoogleStrategy(passport, strategyName, options = {}) {
 
 module.exports = passport => {
   passport.serializeUser((user, done) => done(null, user?.id));
-  passport.deserializeUser((id, done) => {
+  passport.deserializeUser(async (id, done) => {
     try {
-      const db = readDB();
-      const user = (db.usuarios || []).find(entry => Number(entry.id) === Number(id));
+      const user = await findPgUserById(id);
       done(null, user || false);
     } catch (error) {
       done(error);

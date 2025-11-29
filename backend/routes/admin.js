@@ -1,68 +1,82 @@
 const express = require('express');
 const adminRouter = express.Router();
-const { readDB, saveDB } = require('../services/db_json');
 const { verifyToken, requireRole } = require('../middleware/auth');
 
 adminRouter.use(verifyToken, requireRole('admin'));
-adminRouter.get('/usuarios', (req,res)=>{
-	const db = readDB();
-	res.json(sanitizeUsers(db.usuarios || []));
-});
-adminRouter.get('/logs', (req,res)=>{ const db = readDB(); res.json(db.logs||[]); });
-adminRouter.get('/requests', (req,res)=>{ const db = readDB(); res.json(db.requests||[]); });
-
-adminRouter.get('/requests/overdue.csv', (req,res)=>{
-	const db = readDB();
-	const books = db.libros || [];
-	const now = new Date();
-	const overdue = (db.requests || []).filter(r => isOverdueRequest(r, now));
-	const headers = ['titulo','nombre','telefono','fecha_solicitud','fecha_devolucion','estado'];
-	const rows = overdue.map(r => [
-		resolveBookTitle(books, r),
-		(r.requester_name || r.nombre || '').trim(),
-		r.requester_phone || r.celular || '',
-		formatDateForCsv(r.request_date || r.creado),
-		formatDateForCsv(r.due_date || r.devolucion),
-		(r.status || r.estado || '').toLowerCase()
-	]);
-	const csv = [headers, ...rows].map(cols => cols.map(csvEscape).join(',')).join('\n');
-	res.setHeader('Content-Type','text/csv; charset=utf-8');
-	res.setHeader('Content-Disposition','attachment; filename="prestamos_vencidos.csv"');
-	return res.send(csv);
+// Eliminado endpoint legacy de usuarios basado en JSON
+const { getAllPgLogs } = require('../services/logs');
+adminRouter.get('/logs', async (req, res) => {
+	try {
+		const logs = await getAllPgLogs();
+		res.json(logs);
+	} catch (error) {
+		console.error('[admin] Error al obtener logs de PostgreSQL:', error);
+		res.status(500).json({ error: 'No se pudieron obtener los logs' });
+	}
 });
 
-adminRouter.put('/requests/:id', (req,res)=>{
+const { getAllPgRequests, updatePgRequest } = require('../services/admin_requests');
+
+adminRouter.get('/requests', async (req, res) => {
+	try {
+		const requests = await getAllPgRequests();
+		res.json(requests);
+	} catch (error) {
+		console.error('[admin] Error al obtener solicitudes de PostgreSQL:', error);
+		res.status(500).json({ error: 'No se pudieron obtener las solicitudes' });
+	}
+});
+
+adminRouter.get('/requests/overdue.csv', async (req, res) => {
+	try {
+		const { getAllPgRequests } = require('../services/admin_requests');
+		const { getAllPgLibros } = require('../services/libros');
+		const books = await getAllPgLibros();
+		const now = new Date();
+		const requests = await getAllPgRequests();
+		const overdue = requests.filter(r => {
+			if (!r.due_date) return false;
+			if ((r.status || '').toLowerCase() !== 'recogido') return false;
+			return new Date(r.due_date) < now;
+		});
+		const headers = ['titulo','nombre','telefono','fecha_solicitud','fecha_devolucion','estado'];
+		const rows = overdue.map(r => [
+			resolveBookTitle(books, r),
+			(r.requester_name || '').trim(),
+			r.requester_phone || '',
+			formatDateForCsv(r.request_date),
+			formatDateForCsv(r.due_date),
+			(r.status || '').toLowerCase()
+		]);
+		const csv = [headers, ...rows].map(cols => cols.map(csvEscape).join(',')).join('\n');
+		res.setHeader('Content-Type','text/csv; charset=utf-8');
+		res.setHeader('Content-Disposition','attachment; filename="prestamos_vencidos.csv"');
+		return res.send(csv);
+	} catch (error) {
+		console.error('[admin] Error al exportar CSV de vencidos desde PostgreSQL:', error);
+		res.status(500).send('No se pudo exportar el CSV');
+	}
+});
+
+adminRouter.put('/requests/:id', async (req, res) => {
 	const { status, due_date } = req.body || {};
 	const normalizedStatus = (status || '').toLowerCase();
 	const allowed = ['pendiente','aprobado','recogido','devuelto','rechazado'];
 	if(!allowed.includes(normalizedStatus)) return res.status(400).json({error:'Estado no soportado'});
-	const db = readDB();
-	db.requests = db.requests || [];
-	const request = db.requests.find(r => String(r.id) === String(req.params.id));
-	if(!request) return res.status(404).json({error:'Solicitud no encontrada'});
-	const now = new Date().toISOString();
-	if(normalizedStatus === 'aprobado'){
-		if(!due_date) return res.status(400).json({error:'La fecha de devolución es obligatoria'});
-		const parsedDueDate = new Date(due_date);
-		if(Number.isNaN(parsedDueDate.getTime())) return res.status(400).json({error:'Fecha de devolución inválida'});
-		request.due_date = parsedDueDate.toISOString().split('T')[0];
-		request.approved_at = now;
+	try {
+		// Validaciones de fechas
+		if(normalizedStatus === 'aprobado'){
+			if(!due_date) return res.status(400).json({error:'La fecha de devolución es obligatoria'});
+			const parsedDueDate = new Date(due_date);
+			if(Number.isNaN(parsedDueDate.getTime())) return res.status(400).json({error:'Fecha de devolución inválida'});
+		}
+		const request = await updatePgRequest(req.params.id, { status: normalizedStatus, due_date });
+		if(!request) return res.status(404).json({error:'Solicitud no encontrada'});
+		res.json({ok:true, request});
+	} catch (error) {
+		console.error('[admin] Error al actualizar solicitud en PostgreSQL:', error);
+		res.status(500).json({ error: 'No se pudo actualizar la solicitud' });
 	}
-	if(normalizedStatus === 'recogido'){
-		request.picked_at = now;
-	}
-	if(normalizedStatus === 'devuelto'){
-		request.returned_at = now;
-	}
-	if(normalizedStatus === 'rechazado'){
-		request.due_date = null;
-	}
-	request.status = normalizedStatus;
-	request.updated_at = now;
-	db.logs = db.logs || [];
-	db.logs.push({usuario: req.user?.email || 'admin', action:`request_${normalizedStatus}`, at:now, requestId: request.id});
-	saveDB(db);
-	res.json({ok:true, request});
 });
 
 	function resolveBookTitle(books = [], request = {}){

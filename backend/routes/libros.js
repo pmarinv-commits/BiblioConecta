@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { readDB, saveDB } = require('../services/db_json');
+const { getAllPgLibros, createPgLibro } = require('../services/libros');
 const { verifyToken, requireRole } = require('../middleware/auth');
 const multer = require('multer');
 const path = require('path');
@@ -38,23 +38,25 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage, fileFilter, limits: { fileSize: 20 * 1024 * 1024 }});
 
-function collectReferencedFiles() {
-  const db = readDB();
+
+// Eliminado: const { getAllPgLibros } = require('../services/libros');
+async function collectReferencedFiles() {
+  const libros = await getAllPgLibros();
   const refs = new Set();
-  (db.libros || []).forEach(libro => {
+  (libros || []).forEach(libro => {
     if (libro.portada) refs.add(path.basename(libro.portada));
     if (libro.pdf) refs.add(path.basename(libro.pdf));
   });
   return refs;
 }
 
-function cleanupOrphanFiles(){
+async function cleanupOrphanFiles() {
   try {
-    const referenced = collectReferencedFiles();
+    const referenced = await collectReferencedFiles();
     const filesOnDisk = fs.readdirSync(uploadDir);
     filesOnDisk.forEach(file => {
       if (!referenced.has(file)) {
-        fs.unlink(path.join(uploadDir, file), ()=>{});
+        fs.unlink(path.join(uploadDir, file), () => {});
       }
     });
   } catch (error) {
@@ -79,87 +81,106 @@ function deleteStoredFile(storedPath) {
   }
 }
 
-router.get('/', (req,res)=>{
-  const db = readDB();
-  const tipo = req.query.tipo;
-  let libros = db.libros || [];
-  if(tipo) libros = libros.filter(b=> b.tipo === tipo);
-  res.json(libros);
+router.get('/', async (req, res) => {
+  try {
+    let libros = await getAllPgLibros();
+    const tipo = req.query.tipo;
+    if (tipo) libros = libros.filter(b => b.tipo === tipo);
+    res.json(libros);
+  } catch (error) {
+    console.error('[libros] Error al obtener libros de PostgreSQL:', error);
+    res.status(500).json({ error: 'No se pudieron obtener los libros' });
+  }
 });
 
-router.get('/:id', (req,res)=>{
-  const db = readDB();
-  const b = db.libros.find(x=> x.id==req.params.id);
-  if(!b) return res.status(404).json({error:'No encontrado'});
-  res.json(b);
+const { getPgLibroById } = require('../services/libros');
+
+router.get('/:id', async (req, res) => {
+  try {
+    const libro = await getPgLibroById(req.params.id);
+    if (!libro) return res.status(404).json({ error: 'No encontrado' });
+    res.json(libro);
+  } catch (error) {
+    console.error('[libros] Error al obtener libro por id en PostgreSQL:', error);
+    res.status(500).json({ error: 'No se pudo obtener el libro' });
+  }
 });
 
-router.post('/', verifyToken, requireRole('admin'), upload.fields([{name:'portada'},{name:'pdf'}]), (req,res)=>{
-  const db = readDB();
-  db.libros = db.libros || [];
-  db.logs = db.logs || [];
-  const body = req.body || {};
-  const id = db.libros.length? Math.max(...db.libros.map(x=>Number(x.id)||0))+1:1;
-  const portada = req.files && req.files.portada ? '/uploads/'+req.files.portada[0].filename : '';
-  const pdf = req.files && req.files.pdf ? '/uploads/'+req.files.pdf[0].filename : '';
-  const libro = {
-    id,
-    titulo: body.titulo,
-    autor: body.autor,
-    descripcion: body.descripcion,
-    genero: body.genero,
-    fecha_publicacion: body.fecha_publicacion,
-    portada,
-    pdf,
-    tipo: body.tipo || 'digital'
-  };
-  db.libros.push(libro);
-  db.logs.push({usuario:'admin', action:'libro_creado', at:new Date().toISOString(), libroId:id});
-  saveDB(db);
-  setImmediate(cleanupOrphanFiles);
-  res.json({ok:true, libro});
+router.post('/', verifyToken, requireRole('admin'), upload.fields([{name:'portada'},{name:'pdf'}]), async (req, res) => {
+  try {
+    const body = req.body || {};
+    const portada = req.files && req.files.portada ? '/uploads/' + req.files.portada[0].filename : '';
+    const pdf = req.files && req.files.pdf ? '/uploads/' + req.files.pdf[0].filename : '';
+    const libro = await createPgLibro({
+      titulo: body.titulo,
+      autor: body.autor,
+      descripcion: body.descripcion,
+      genero: body.genero,
+      fecha_publicacion: body.fecha_publicacion,
+      portada,
+      pdf,
+      tipo: body.tipo || 'digital',
+      updated_at: new Date()
+    });
+    // Aquí podrías agregar un log en PostgreSQL si tienes tabla de logs
+    setImmediate(cleanupOrphanFiles);
+    res.json({ ok: true, libro });
+  } catch (error) {
+    console.error('[libros] Error al crear libro en PostgreSQL:', error);
+    res.status(500).json({ error: 'No se pudo crear el libro' });
+  }
 });
 
-router.put('/:id', verifyToken, requireRole('admin'), upload.fields([{name:'portada'},{name:'pdf'}]), (req,res)=>{
-  const db = readDB();
-  db.libros = db.libros || [];
-  db.logs = db.logs || [];
-  const libro = db.libros.find(x=> Number(x.id) === Number(req.params.id));
-  if(!libro) return res.status(404).json({error:'No encontrado'});
-  const body = req.body || {};
-  ['titulo','autor','descripcion','genero','fecha_publicacion','tipo'].forEach(field => {
-    if (Object.prototype.hasOwnProperty.call(body, field)) {
-      libro[field] = body[field];
+const { updatePgLibro } = require('../services/libros');
+
+router.put('/:id', verifyToken, requireRole('admin'), upload.fields([{name:'portada'},{name:'pdf'}]), async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+    const body = req.body || {};
+    let portada, pdf;
+    if (req.files && req.files.portada) {
+      portada = '/uploads/' + req.files.portada[0].filename;
     }
-  });
-  if (req.files && req.files.portada) {
-    deleteStoredFile(libro.portada);
-    libro.portada = '/uploads/'+req.files.portada[0].filename;
+    if (req.files && req.files.pdf) {
+      pdf = '/uploads/' + req.files.pdf[0].filename;
+    }
+    const libro = await updatePgLibro(id, {
+      titulo: body.titulo,
+      autor: body.autor,
+      descripcion: body.descripcion,
+      genero: body.genero,
+      fecha_publicacion: body.fecha_publicacion,
+      portada,
+      pdf,
+      tipo: body.tipo,
+      updated_at: new Date()
+    });
+    if (!libro) return res.status(404).json({ error: 'No encontrado' });
+    setImmediate(cleanupOrphanFiles);
+    res.json({ ok: true, libro });
+  } catch (error) {
+    console.error('[libros] Error al actualizar libro en PostgreSQL:', error);
+    res.status(500).json({ error: 'No se pudo actualizar el libro' });
   }
-  if (req.files && req.files.pdf) {
-    deleteStoredFile(libro.pdf);
-    libro.pdf = '/uploads/'+req.files.pdf[0].filename;
-  }
-  libro.updated_at = new Date().toISOString();
-  db.logs.push({usuario:'admin', action:'libro_actualizado', at:new Date().toISOString(), libroId:libro.id});
-  saveDB(db);
-  setImmediate(cleanupOrphanFiles);
-  res.json({ok:true, libro});
 });
 
-router.delete('/:id', verifyToken, requireRole('admin'), (req,res)=>{
-  const db = readDB();
-  db.libros = db.libros || [];
-  db.logs = db.logs || [];
-  const idx = db.libros.findIndex(x=> Number(x.id) === Number(req.params.id));
-  if(idx === -1) return res.status(404).json({error:'No encontrado'});
-  const removed = db.libros.splice(idx,1)[0];
-  deleteStoredFile(removed?.portada);
-  deleteStoredFile(removed?.pdf);
-  db.logs.push({usuario:'admin', action:'libro_eliminado', at:new Date().toISOString(), libroId:removed.id});
-  saveDB(db);
-  setImmediate(cleanupOrphanFiles);
-  res.json({ok:true});
+const { deletePgLibro } = require('../services/libros');
+
+router.delete('/:id', verifyToken, requireRole('admin'), async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+    const removed = await deletePgLibro(id);
+    if (!removed) return res.status(404).json({ error: 'No encontrado' });
+    deleteStoredFile(removed?.portada);
+    deleteStoredFile(removed?.pdf);
+    setImmediate(cleanupOrphanFiles);
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('[libros] Error al eliminar libro en PostgreSQL:', error);
+    res.status(500).json({ error: 'No se pudo eliminar el libro' });
+  }
 });
 
 module.exports = router;

@@ -53,6 +53,61 @@
       ],
       "password": "pablo123",
       "last_login": "2025-11-24T02:49:51.117Z"
+    },
+    {
+      "id": 7,
+      "nombre": "Guillermo Bueno",
+      "rut": "gbuenov",
+      "email": "gbuenov@alumnos.ceduc.cl",
+      "role": [
+        "alumno"
+      ],
+      "password": "gbuenov",
+      "last_login": null
+    },
+    {
+      "id": 8,
+      "nombre": "Yire Inostroza",
+      "rut": "Yinostrozag",
+      "email": "Yinostrozag@alumnos.ceduc.cl",
+      "role": [
+        "alumno"
+      ],
+      "password": "Yinostrozag",
+      "last_login": null
+    },
+    {
+      "id": 9,
+      "nombre": "Gonzalo Garrido",
+      "rut": "ggarridot",
+      "email": "ggarridot@alumnos.ceduc.cl",
+      "role": [
+        "admin"
+      ],
+      "password": "ggarridot",
+      "last_login": null
+    },
+    {
+      "id": 10,
+      "nombre": "Natalia Castañeda",
+      "rut": "ncastanedac",
+      "email": "ncastanedac@alumnos.ceduc.cl",
+      "role": [
+        "admin"
+      ],
+      "password": "ncastanedac",
+      "last_login": null
+    },
+    {
+      "id": 11,
+      "nombre": "Pablo Vidal",
+      "rut": "pvidals",
+      "email": "pvidals@alumnos.ceduc.cl",
+      "role": [
+        "admin"
+      ],
+      "password": "pvidals",
+      "last_login": null
     }
   ],
   "libros": [
@@ -527,6 +582,16 @@
       "usuario": "pmarinv@alumnos.ceduc.cl",
       "action": "login",
       "at": "2025-11-24T02:49:51.117Z"
+    },
+    {
+      "usuario": "ggarridot@alumnos.ceduc.cl",
+      "action": "login",
+      "at": "2025-11-25T01:12:43.893Z"
+    },
+    {
+      "usuario": "ggarridot@alumnos.ceduc.cl",
+      "action": "login",
+      "at": "2025-11-25T01:18:17.200Z"
     }
   ],
   "subrayados": [],
@@ -550,6 +615,15 @@
       "currentPage": 10,
       "totalPages": 331,
       "updatedAt": "2025-11-16T02:38:02.371Z"
+    },
+    {
+      "id": 3,
+      "alumnoId": 8,
+      "libroId": 3,
+      "percentage": 1,
+      "currentPage": 1,
+      "totalPages": 88,
+      "updatedAt": "2025-11-25T04:36:43.185Z"
     }
   ]
 }

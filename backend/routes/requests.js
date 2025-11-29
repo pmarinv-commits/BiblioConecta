@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const { readDB, saveDB } = require('../services/db_json');
 const { verifyToken, requireRole } = require('../middleware/auth');
 
 const adminGuard = [verifyToken, requireRole('admin')];
@@ -42,40 +41,28 @@ function normalizeRequestPayload(body = {}) {
   };
 }
 
-router.post('/', (req, res) => {
-  const db = readDB();
-  db.requests = db.requests || [];
-  db.logs = db.logs || [];
-  const id = nextId(db.requests);
-  const now = new Date().toISOString();
-  const normalized = normalizeRequestPayload(req.body || {});
-  const request = {
-    id,
-    ...normalized,
-    request_date: now,
-    status: 'pendiente',
-    due_date: null
-  };
-  db.requests.push(request);
-  db.logs.push({ usuario: request.requester_email || request.requester_rut || 'visitante', action: 'request_created', at: now, requestId: id });
-  saveDB(db);
-  res.json({ ok: true, request });
+const { createPgRequest } = require('../services/requests');
+
+router.post('/', async (req, res) => {
+  try {
+    const now = new Date();
+    const normalized = normalizeRequestPayload(req.body || {});
+    const request = await createPgRequest({
+      ...normalized,
+      request_date: now,
+      status: 'pendiente',
+      due_date: null
+    });
+    res.json({ ok: true, request });
+  } catch (error) {
+    console.error('[requests] Error al crear solicitud en PostgreSQL:', error);
+    res.status(500).json({ error: 'No se pudo crear la solicitud' });
+  }
 });
 
-router.get('/', adminGuard, (req, res) => {
-  const db = readDB();
-  res.json(db.requests || []);
-});
+// Eliminado endpoint legacy de requests basado en JSON
 
-router.get('/overdue/list', adminGuard, (req, res) => {
-  const db = readDB();
-  const now = new Date();
-  const overdue = (db.requests || []).filter(r => {
-    if (!r.due_date) return false;
-    if ((r.status || '').toLowerCase() !== 'recogido') return false;
-    return new Date(r.due_date) < now;
-  });
-  res.json(overdue);
-});
+// TODO: Migrar lógica de overdue/list a PostgreSQL
+// return res.status(501).json({ error: 'No implementado: migrar overdue/list a PostgreSQL' });
 
 module.exports = router;

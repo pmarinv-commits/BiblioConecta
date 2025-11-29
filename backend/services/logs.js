@@ -1,16 +1,36 @@
-const { readDB, saveDB } = require('./db_json');
+const { query } = require('./db_pg');
 
-function appendLogEntry(entry = {}) {
+function mapPgLog(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    usuario: row.usuario,
+    action: row.action,
+    at: row.at ? new Date(row.at).toISOString() : null,
+    libroId: row.libro_id || null,
+    requestId: row.request_id || null
+  };
+}
+
+async function appendLogEntry(entry = {}) {
   try {
-    const db = readDB();
-    db.logs = db.logs || [];
-    db.logs.push(entry);
-    saveDB(db);
+    const { usuario, action, at = new Date(), libroId = null, requestId = null } = entry;
+    await query(
+      `INSERT INTO logs (usuario, action, at, libro_id, request_id)
+       VALUES ($1, $2, $3, $4, $5)`,
+      [usuario, action, at instanceof Date ? at.toISOString() : at, libroId, requestId]
+    );
   } catch (err) {
-    console.error('[logs] No se pudo guardar el evento en database.json', err);
+    console.error('[logs] No se pudo guardar el evento en PostgreSQL', err);
   }
 }
 
+async function getAllPgLogs() {
+  const { rows } = await query('SELECT * FROM logs ORDER BY at DESC');
+  return rows.map(mapPgLog);
+}
+
 module.exports = {
-  appendLogEntry
+  appendLogEntry,
+  getAllPgLogs
 };

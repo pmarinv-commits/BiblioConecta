@@ -86,5 +86,25 @@ module.exports = {
   serializeUser,
   findPgUserByEmail,
   findPgUserById,
-  updatePgUserLastLogin
+  updatePgUserLastLogin,
+  createPgUser
 };
+
+// Crea un usuario en PostgreSQL
+async function createPgUser({ nombre, rut, email, password, role = ['alumno'], created_at = new Date(), last_login = null }) {
+  const { rows } = await query(
+    `INSERT INTO usuarios (nombre, rut, email, password, role, created_at, last_login)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
+     RETURNING id, nombre, rut, email, password, role, last_login, created_at`,
+    [
+      String(nombre).trim(),
+      String(rut).trim(),
+      String(email).trim().toLowerCase(),
+      String(password),
+      Array.isArray(role) ? role : [role],
+      created_at instanceof Date ? created_at.toISOString() : created_at,
+      last_login
+    ]
+  );
+  return mapPgUser(rows[0]);
+}
