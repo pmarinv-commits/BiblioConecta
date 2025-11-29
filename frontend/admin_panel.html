@@ -507,22 +507,40 @@
         window.location.href = buildLoginUrl();
         throw new Error('Sesión expirada');
       }
+      let isHtml = false;
+      let text = null;
       if (!res.ok) {
         let message = `Error ${res.status} en ${url}`;
+        try {
+          // Try to detect HTML error page
+          text = await res.clone().text();
+          if (text && (text.trim().startsWith('<') || text.toLowerCase().includes('<html'))) {
+            isHtml = true;
+          }
+        } catch (e) {
+          // ignore
+        }
+        if (isHtml) {
+          localStorage.removeItem(ADMIN_TOKEN_KEY);
+          window.location.href = buildLoginUrl();
+          throw new Error('Sesión expirada (HTML)');
+        }
         try {
           const body = await res.clone().json();
           message = body?.error || body?.message || message;
         } catch (e) {
-          try {
-            const text = await res.text();
-            if (text) message = text;
-          } catch (err) {
-            // ignore
-          }
+          if (text && !isHtml) message = text;
         }
         const error = new Error(message);
         error.status = res.status;
         throw error;
+      }
+      // If response is HTML but status is 200, treat as session expired
+      text = text || await res.clone().text();
+      if (text && (text.trim().startsWith('<') || text.toLowerCase().includes('<html'))) {
+        localStorage.removeItem(ADMIN_TOKEN_KEY);
+        window.location.href = buildLoginUrl();
+        throw new Error('Sesión expirada (HTML 200)');
       }
       return res.json();
     }

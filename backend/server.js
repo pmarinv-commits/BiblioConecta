@@ -76,7 +76,7 @@ app.use('/api/pdf', require('./routes/pdf'));
 app.use('/api/admin', adminRouter);
 
 // fallback
-app.get('*', (req,res)=> res.sendFile(path.join(__dirname,'../frontend/catalogo.html')));
+app.get('*', (req,res)=> res.sendFile(path.join(frontendDir, 'catalogo.html')));
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, ()=> console.log('Server running on', PORT));
