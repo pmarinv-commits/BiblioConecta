@@ -1,3 +1,14 @@
+(function handleGoogleRedirectToken(){
+  // Solo ejecuta en catalogo.html
+  if (!window.location.pathname.endsWith('/catalogo.html')) return;
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+  if (token) {
+    localStorage.setItem('token', token);
+    // Opcional: limpiar el parámetro de la URL
+    window.location.replace('/portal_alumno_static.html');
+  }
+})();
 (function enableGoogleLoginButton(){
   document.addEventListener('DOMContentLoaded', function() {
     const googleBtn = document.getElementById('heroGoogleBtn');
