@@ -6,7 +6,7 @@ function mapPgLog(row) {
     id: row.id,
     usuario: row.usuario,
     action: row.action,
-    at: row.at ? new Date(row.at).toISOString() : null,
+    at: row.created_at ? new Date(row.created_at).toISOString() : null,
     libroId: row.libro_id || null,
     requestId: row.request_id || null
   };
@@ -16,7 +16,7 @@ async function appendLogEntry(entry = {}) {
   try {
     const { usuario, action, at = new Date(), libroId = null, requestId = null } = entry;
     await query(
-      `INSERT INTO logs (usuario, action, at, libro_id, request_id)
+      `INSERT INTO logs (usuario, action, created_at, libro_id, request_id)
        VALUES ($1, $2, $3, $4, $5)`,
       [usuario, action, at instanceof Date ? at.toISOString() : at, libroId, requestId]
     );
@@ -26,7 +26,7 @@ async function appendLogEntry(entry = {}) {
 }
 
 async function getAllPgLogs() {
-  const { rows } = await query('SELECT * FROM logs ORDER BY at DESC');
+  const { rows } = await query('SELECT * FROM logs ORDER BY created_at DESC');
   return rows.map(mapPgLog);
 }
 
