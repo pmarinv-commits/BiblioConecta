@@ -1,3 +1,14 @@
+(function enableGoogleLoginButton(){
+  document.addEventListener('DOMContentLoaded', function() {
+    const googleBtn = document.getElementById('heroGoogleBtn');
+    if (googleBtn) {
+      googleBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        window.location.href = '/api/auth/google';
+      });
+    }
+  });
+})();
 (function bootstrapSessionManager(){
   const ROLE_PORTALS = {
     alumno: '/portal_alumno_static.html'
