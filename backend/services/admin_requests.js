@@ -1,3 +1,24 @@
+// Crear un préstamo físico en PostgreSQL
+async function createPgRequest({ book_id, requester_name, requester_rut, requester_phone, requester_email, due_date, status = 'recogido', request_date }) {
+  const { rows } = await query(
+    `INSERT INTO requests (book_id, requester_name, requester_rut, requester_phone, requester_email, due_date, status, request_date, updated_at, picked_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+     RETURNING *`,
+    [
+      book_id,
+      requester_name,
+      requester_rut,
+      requester_phone,
+      requester_email,
+      due_date,
+      status,
+      request_date instanceof Date ? request_date.toISOString() : request_date,
+      new Date().toISOString(),
+      status === 'recogido' ? new Date().toISOString() : null
+    ]
+  );
+  return mapPgRequest(rows[0]);
+}
 const { query } = require('./db_pg');
 
 function mapPgRequest(row) {
@@ -68,5 +89,6 @@ async function updatePgRequest(id, { status, due_date }) {
 
 module.exports = {
   getAllPgRequests,
-  updatePgRequest
+  updatePgRequest,
+  createPgRequest
 };

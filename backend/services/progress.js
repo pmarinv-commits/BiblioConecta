@@ -15,12 +15,12 @@ function mapPgProgress(row) {
 
 async function upsertPgProgress({ alumnoId, libroId, percentage, currentPage, totalPages }) {
   const { rows } = await query(
-    `INSERT INTO progress (user_id, libro_id, page, updated_at)
-     VALUES ($1, $2, $3, NOW())
+    `INSERT INTO progress (user_id, libro_id, page, percentage, total_pages, updated_at)
+     VALUES ($1, $2, $3, $4, $5, NOW())
      ON CONFLICT (user_id, libro_id)
-     DO UPDATE SET page = $3, updated_at = NOW()
+     DO UPDATE SET page = $3, percentage = $4, total_pages = $5, updated_at = NOW()
      RETURNING *`,
-    [alumnoId, libroId, currentPage]
+    [alumnoId, libroId, currentPage, percentage, totalPages]
   );
   return mapPgProgress(rows[0]);
 }

@@ -49,6 +49,20 @@ router.get('/subrayados', async (req, res) => {
 router.get('/dashboard', async (req, res) => {
   try {
     const libros = await getAllPgLibros();
+    // Obtener progreso de todos los libros para el usuario
+    const { query } = require('../services/db_pg');
+    const { rows: progressRows } = await query(
+      'SELECT * FROM progress WHERE user_id = $1',
+      [req.user.id]
+    );
+    // Map libro_id => { percentage, currentPage }
+    const progressMap = new Map();
+    for (const row of progressRows) {
+      progressMap.set(Number(row.libro_id), {
+        percentage: row.percentage || 0,
+        currentPage: row.page || 1
+      });
+    }
     res.json({
       estudiante: { nombre: req.user.nombre || 'Alumno', curso: req.user.curso || '' },
       listas: [{
@@ -56,18 +70,22 @@ router.get('/dashboard', async (req, res) => {
         nombre: 'Catálogo digital',
         descripcion: 'Libros disponibles en la biblioteca digital.',
         curso: req.user.curso || 'General',
-        libros: libros.map(libro => ({
-          id: libro.id,
-          titulo: libro.titulo,
-          autor: libro.autor,
-          genero: libro.genero,
-          progreso: 0,
-          paginas: libro.paginas || null,
-          pdf: libro.pdf || '',
-          portada: libro.portada || '',
-          tipo: libro.tipo || 'digital',
-          descripcion: libro.descripcion || ''
-        }))
+        libros: libros.map(libro => {
+          const progress = progressMap.get(Number(libro.id)) || { percentage: 0, currentPage: 1 };
+          return {
+            id: libro.id,
+            titulo: libro.titulo,
+            autor: libro.autor,
+            genero: libro.genero,
+            progreso: progress.percentage,
+            currentPage: progress.currentPage,
+            paginas: libro.paginas || null,
+            pdf: libro.pdf || '',
+            portada: libro.portada || '',
+            tipo: libro.tipo || 'digital',
+            descripcion: libro.descripcion || ''
+          };
+        })
       }],
       stats: { listasAsignadas: 1, lecturasActivas: libros.length, librosPorLeer: libros.length, librosLeidos: 0, subrayados: 0 }
     });

@@ -4,12 +4,18 @@ const { normalizeRoles, hasRole } = require('../services/roles');
 function verifyToken(req,res,next){
   const auth = req.headers.authorization || '';
   const token = auth.replace('Bearer ','').trim();
-  if(!token) return res.status(401).json({error:'No token'});
+  if(!token) {
+    console.warn('[auth] No token recibido');
+    return res.status(401).json({error:'No token'});
+  }
   try{
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'devsecret');
     req.user = decoded;
     return next();
-  }catch(e){ return res.status(401).json({error:'Invalid token'}); }
+  }catch(e){
+    console.error('[auth] Token inválido:', e.message, { token });
+    return res.status(401).json({error:'Invalid token', reason: e.message});
+  }
 }
 
 function requireRole(role){

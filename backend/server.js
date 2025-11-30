@@ -70,10 +70,25 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/admin/auth', require('./routes/adminAuth'));
 app.use('/api/libros', require('./routes/libros'));
+app.use('/api/libros/prestados', require('./routes/libros_prestados'));
 app.use('/api/requests', require('./routes/requests'));
 app.use('/api/student', require('./routes/student'));
 app.use('/api/pdf', require('./routes/pdf'));
+
+
 app.use('/api/admin', adminRouter);
+
+// 404 handler para rutas /api/* no encontradas
+app.use('/api', (req, res, next) => {
+	res.status(404).json({ error: 'API endpoint not found' });
+});
+
+// Middleware global para errores en /api/*
+app.use('/api', (err, req, res, next) => {
+	if (res.headersSent) return next(err);
+	const status = err.status || 500;
+	res.status(status).json({ error: err.message || 'Error interno del servidor' });
+});
 
 // fallback
 app.get('*', (req,res)=> res.sendFile(path.join(frontendDir, 'catalogo.html')));

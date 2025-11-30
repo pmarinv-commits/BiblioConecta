@@ -1,8 +1,33 @@
+const { createPgRequest, getAllPgRequests, updatePgRequest } = require('../services/admin_requests');
 const express = require('express');
 const adminRouter = express.Router();
 const { verifyToken, requireRole } = require('../middleware/auth');
 
 adminRouter.use(verifyToken, requireRole('admin'));
+
+// POST /api/admin/requests - registrar préstamo físico manualmente (solo admin, PostgreSQL)
+adminRouter.post('/requests', async (req, res) => {
+	const { book_id, nombre, rut, telefono, email, due_date, status } = req.body || {};
+	if (!book_id || !nombre || !rut || !telefono || !due_date) {
+		return res.status(400).json({ error: 'Faltan campos obligatorios' });
+	}
+	try {
+		const newRequest = await createPgRequest({
+			book_id,
+			requester_name: nombre,
+			requester_rut: rut,
+			requester_phone: telefono,
+			requester_email: email || null,
+			due_date,
+			status: status || 'recogido',
+			request_date: new Date(),
+		});
+		res.status(201).json({ ok: true, request: newRequest });
+	} catch (error) {
+		console.error('[admin] Error al registrar préstamo físico en PostgreSQL:', error);
+		res.status(500).json({ error: 'No se pudo registrar el préstamo físico' });
+	}
+});
 // Eliminado endpoint legacy de usuarios basado en JSON
 const { getAllPgLogs } = require('../services/logs');
 adminRouter.get('/logs', async (req, res) => {
@@ -15,7 +40,6 @@ adminRouter.get('/logs', async (req, res) => {
 	}
 });
 
-const { getAllPgRequests, updatePgRequest } = require('../services/admin_requests');
 
 adminRouter.get('/requests', async (req, res) => {
 	try {

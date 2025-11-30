@@ -196,8 +196,6 @@
       color: #222 !important;
       border: none !important;
       font-weight: 600;
-    }
-      border: none !important;
       box-shadow: 0 4px 12px rgba(246, 193, 139, 0.18);
     }
     .btn.btn-outline-primary:hover,
@@ -384,7 +382,7 @@
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
           <div>
             <p class="text-uppercase text-muted small mb-1">Catálogo de bienvenida</p>
-            <h2 class="h4 mb-0">Lo último agregado al plan lector</h2>
+            <h2 class="h4 mb-0">Lo último agregado a Biblioconecta</h2>
           </div>
         </div>
         <div id="welcomeEmpty" class="alert alert-info-soft" role="status" hidden>Aún no hay libros registrados.</div>
@@ -444,6 +442,17 @@
       } catch (err) {
         // Error al cargar el catálogo
         state.fullData = [];
+      }
+      // Cargar préstamos físicos activos desde endpoint público
+      try {
+        const resReq = await fetch('/api/libros/prestados/activos');
+        if (resReq.ok) {
+          state.activeLoans = await resReq.json();
+        } else {
+          state.activeLoans = [];
+        }
+      } catch (e) {
+        state.activeLoans = [];
       }
       applyTypeFilter(initialType);
       renderWelcomeCatalog();
@@ -536,11 +545,11 @@
       const primaryClass = variant === 'solid'
         ? 'btn btn-primary rounded-pill fw-semibold'
         : 'btn btn-outline-primary rounded-pill fw-semibold';
-      const descriptionButton = `<button class='${primaryClass}' type='button' onclick='openBookDescription("${libro.id}")'>Ver descripción</button>`;
+      const descriptionButton = `<button class='${primaryClass}' type='button' onclick='openBookDescription("${libro.id}")'>Ver detalles</button>`;
       const normalizedType = (libro.tipo || 'digital').toLowerCase();
       if (normalizedType === 'fisico') {
-        const requestButton = `<button class='btn btn-warning rounded-pill fw-semibold' onclick='openPhysicalRequest("${libro.id}")'>Solicitar en físico</button>`;
-        return `<div class="d-flex flex-wrap gap-2">${descriptionButton}${requestButton}</div>`;
+        // Solo mostrar el botón de detalles para libros físicos
+        return `<div class=\"d-flex flex-wrap gap-2 align-items-center\">${descriptionButton}</div>`;
       }
       if (!state.canReadDigital) {
         const loginCopy = state.isAuthenticated
@@ -550,19 +559,19 @@
           ? 'disabled'
           : "onclick='promptLoginForDigital()'";
         const loginButton = `<button class='btn btn-success rounded-pill fw-semibold' type='button' ${loginAttrs}>${loginCopy}</button>`;
-        return `<div class="d-flex flex-wrap gap-2">${descriptionButton}${loginButton}</div>`;
+        return `<div class=\"d-flex flex-wrap gap-2\">${descriptionButton}${loginButton}</div>`;
       }
       const hasPdf = Boolean(libro.pdf);
       const readLabel = hasPdf ? 'Leer ahora' : 'PDF no disponible';
       const readAttrs = hasPdf
-        ? `onclick='redirectToPortal("${libro.id}")'`
+        ? `onclick='redirectToPortal(\"${libro.id}\")'`
         : "disabled title='Aún no se ha cargado el PDF'";
       const readButton = `<button class='btn btn-success rounded-pill fw-semibold' type='button' ${readAttrs}>${readLabel}</button>`;
       return `<div class='d-flex flex-wrap gap-2'>${descriptionButton}${readButton}</div>`;
     }
 
     function renderWelcomeActions(libro) {
-      const descriptionButton = `<button class='btn btn-primary rounded-pill fw-semibold' type='button' onclick='openBookDescription("${libro.id}")'>Ver descripción</button>`;
+      const descriptionButton = `<button class='btn btn-primary rounded-pill fw-semibold' type='button' onclick='openBookDescription("${libro.id}")'>Ver detalles</button>`;
       return `<div class="d-flex flex-wrap gap-2">${descriptionButton}</div>`;
     }
 
@@ -603,8 +612,75 @@
       }
     }
 
+    // Modal de detalles de libro
     function openBookDescription(bookId) {
-      alert('Descripción del libro: ' + bookId);
+      const numericId = Number(bookId);
+      const book = (state.fullData || []).find(b => String(b.id) === String(numericId));
+      if (!book) {
+        alert('No se encontró información del libro.');
+        return;
+      }
+      // Rellenar el modal
+      const modal = document.getElementById('bookDetailsModal');
+      if (!modal) return;
+      // Cambiar a .book-title para evitar conflicto con Bootstrap
+      const h4 = modal.querySelector('.modal-body .book-title');
+      if (h4) h4.textContent = book.titulo || 'Libro sin título';
+      modal.querySelector('.book-details-cover').src = getCover(book);
+      modal.querySelector('.book-details-cover').alt = `Portada de ${book.titulo || 'libro'}`;
+      modal.querySelector('.book-details-author').textContent = book.autor || 'Autor no especificado';
+      modal.querySelector('.book-details-date').textContent = book.fecha_publicacion || 'Sin información';
+      modal.querySelector('.book-details-genre').textContent = book.genero || 'General';
+      modal.querySelector('.book-details-type').textContent = (book.tipo || 'digital').toUpperCase();
+      // Estado de disponibilidad para libros físicos
+      const statusContainerClass = 'book-details-status';
+      let statusHtml = '';
+      if ((book.tipo || '').toLowerCase() === 'fisico') {
+        const loan = (state.activeLoans || []).find(r => String(r.book_id) === String(book.id));
+        if (loan) {
+          const fecha = loan.due_date ? new Date(loan.due_date).toLocaleDateString() : '';
+          statusHtml = `<span class='badge bg-danger ms-2'>Prestado${fecha ? ' hasta: ' + fecha : ''}</span>`;
+        } else {
+          statusHtml = `<span class='badge bg-success ms-2'>Disponible en biblioteca</span>`;
+        }
+      }
+      // Insertar o actualizar el estado en el modal
+      let statusEl = modal.querySelector('.' + statusContainerClass);
+      if (!statusEl) {
+        // Insertar después del tipo
+        const typeRow = modal.querySelector('.book-details-type');
+        if (typeRow && typeRow.parentElement) {
+          statusEl = document.createElement('div');
+          statusEl.className = statusContainerClass + ' mb-2';
+          typeRow.parentElement.insertBefore(statusEl, typeRow.nextSibling);
+        }
+      }
+      if (statusEl) {
+        statusEl.innerHTML = statusHtml;
+        statusEl.style.display = statusHtml ? '' : 'none';
+      }
+      modal.querySelector('.book-details-summary').textContent = book.descripcion || 'No hay descripción disponible para este libro.';
+      // Mostrar el modal
+      if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+        const modalInstance = bootstrap.Modal.getOrCreateInstance(modal);
+        modalInstance.show();
+      } else {
+        // Fallback: mostrar el modal agregando clases manualmente
+        modal.classList.add('show');
+        modal.style.display = 'block';
+        modal.removeAttribute('aria-hidden');
+        modal.setAttribute('aria-modal', 'true');
+        // Cerrar modal al hacer click fuera o en el botón de cerrar
+        const closeBtn = modal.querySelector('[data-bs-dismiss="modal"]');
+        if (closeBtn) {
+          closeBtn.onclick = () => {
+            modal.classList.remove('show');
+            modal.style.display = 'none';
+            modal.setAttribute('aria-hidden', 'true');
+            modal.removeAttribute('aria-modal');
+          };
+        }
+      }
     }
 
     function openPhysicalRequest(bookId) {
@@ -650,6 +726,33 @@
         loadCatalog('');
       });
   </script>
+
+
+  <!-- Modal de detalles de libro -->
+  <div class="modal fade" id="bookDetailsModal" tabindex="-1" aria-labelledby="bookDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header">
+          <h5 class="modal-title" id="bookDetailsModalLabel">Detalles del libro</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body row g-4">
+          <div class="col-md-4 text-center">
+            <img class="book-details-cover img-fluid rounded mb-3" src="" alt="Portada" style="max-height:260px;object-fit:cover;" />
+          </div>
+          <div class="col-md-8">
+            <h4 class="book-title mb-2"></h4>
+            <p class="mb-1"><strong>Autor:</strong> <span class="book-details-author"></span></p>
+            <p class="mb-1"><strong>Fecha de publicación:</strong> <span class="book-details-date"></span></p>
+            <p class="mb-1"><strong>Género:</strong> <span class="book-details-genre"></span></p>
+            <p class="mb-1"><strong>Tipo:</strong> <span class="book-details-type"></span></p>
+            <hr />
+            <p class="book-details-summary mb-0"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="modal fade" id="physicalRequestModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">

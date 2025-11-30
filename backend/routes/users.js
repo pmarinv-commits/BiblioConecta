@@ -10,6 +10,21 @@ const router = express.Router();
 router.use(verifyToken, requireRole('admin'));
 // Eliminado endpoint legacy de usuarios basado en JSON
 
+// GET /api/users - lista todos los usuarios (solo admin)
+router.get('/', async (req, res) => {
+  try {
+    const { rows } = await require('../services/db_pg').query(
+      'SELECT id, nombre, rut, email, role, last_login, created_at FROM usuarios ORDER BY created_at DESC'
+    );
+    const { serializeUser } = require('../services/users');
+    const users = rows.map(serializeUser);
+    res.json(users);
+  } catch (error) {
+    console.error('[users] Error al listar usuarios:', error);
+    res.status(500).json({ error: 'No se pudieron obtener los usuarios' });
+  }
+});
+
 router.post('/', async (req, res) => {
   const { nombre, rut, email, role } = req.body || {};
   if (!nombre || !rut || !email) {

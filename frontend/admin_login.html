@@ -149,13 +149,33 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
           });
-          const payload = await res.json();
-          if (!res.ok) {
-            throw new Error(payload.error || 'No se pudo autenticar');
+          let payload = null;
+          try {
+            payload = await res.clone().json();
+            console.log('[admin-login] Payload recibido:', payload);
+          } catch (e) {
+            const text = await res.clone().text();
+            console.error('[admin-login] Respuesta inesperada del servidor', e, text);
+            throw new Error('Respuesta inesperada del servidor');
           }
+          if (!res.ok) {
+            if (payload && payload.error) {
+              console.warn('[admin-login] Error backend:', payload.error);
+              throw new Error(payload.error);
+            }
+            throw new Error('No se pudo autenticar');
+          }
+          if (!payload.token) {
+            console.error('[admin-login] No se recibió token de autenticación', payload);
+            throw new Error('No se recibió token de autenticación');
+          }
+          console.log('[admin-login] Login exitoso, token recibido:', payload.token);
+          localStorage.setItem(ADMIN_TOKEN_KEY, payload.token);
+          console.log('[admin-login] Token guardado en localStorage:', localStorage.getItem(ADMIN_TOKEN_KEY));
           redirectToPanel(payload.token);
         } catch (error) {
-          alertBox.innerHTML = `<div class="alert alert-danger" role="alert">${error.message}</div>`;
+          alertBox.innerHTML = `<div class=\"alert alert-danger\" role=\"alert\">${error.message}</div>`;
+          console.error('[admin-login] Error en login:', error);
         }
       });
 

@@ -94,6 +94,52 @@
 </head>
 <body>
   <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Modal: Registrar préstamo físico -->
+  <div class="modal fade" id="physicalLoanModal" tabindex="-1" aria-labelledby="physicalLoanModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <form class="modal-content" id="physicalLoanForm">
+        <div class="modal-header">
+          <h5 class="modal-title" id="physicalLoanModalLabel">Registrar préstamo físico</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="loanBookInput" class="form-label">Libro</label>
+            <input class="form-control" id="loanBookInput" name="book_title" list="librosList" placeholder="Escriba para buscar..." autocomplete="off" required />
+            <datalist id="librosList">
+              <!-- Opciones generadas dinámicamente -->
+            </datalist>
+            <input type="hidden" name="book_id" id="loanBookIdHidden" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Nombre del solicitante</label>
+            <input type="text" class="form-control" name="nombre" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">RUT</label>
+            <input type="text" class="form-control" name="rut" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Teléfono</label>
+            <input type="text" class="form-control" name="telefono" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Correo electrónico (opcional)</label>
+            <input type="email" class="form-control" name="email" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Fecha de devolución</label>
+            <input type="date" class="form-control" name="due_date" required />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Registrar préstamo</button>
+        </div>
+      </form>
+    </div>
+  </div>
   <header class="admin-hero">
     <div class="container">
       <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-4">
@@ -256,19 +302,24 @@
                 <option value="pending-delivery">Pendientes por entregar</option>
               </select>
             </div>
-            <button class="btn btn-outline-secondary btn-sm" id="exportOverdueBtn" type="button">
-              <i class="bi bi-file-earmark-arrow-down me-1"></i>Exportar vencidos (CSV)
-            </button>
+            <div class="d-flex flex-wrap gap-2">
+              <button class="btn btn-primary btn-sm" id="addPhysicalLoanBtn" type="button">
+                <i class="bi bi-plus-circle me-1"></i>Registrar préstamo físico
+              </button>
+              <button class="btn btn-outline-secondary btn-sm" id="exportOverdueBtn" type="button">
+                <i class="bi bi-file-earmark-arrow-down me-1"></i>Exportar vencidos (CSV)
+              </button>
+            </div>
           </div>
           <ul class="nav nav-pills gap-2" id="requestsTabs" role="tablist">
             <li class="nav-item" role="presentation">
-              <button class="nav-link active" id="tab-pending-pill" data-bs-toggle="pill" data-bs-target="#tab-pending" type="button" role="tab">Nuevas solicitudes</button>
+              <button class="nav-link active" id="tab-pending-pill" data-bs-toggle="pill" data-bs-target="#tab-pending" type="button" role="tab">Préstamos pendientes</button>
             </li>
             <li class="nav-item" role="presentation">
-              <button class="nav-link" id="tab-approved-pill" data-bs-toggle="pill" data-bs-target="#tab-approved" type="button" role="tab">Solicitudes aprobadas</button>
+              <button class="nav-link" id="tab-approved-pill" data-bs-toggle="pill" data-bs-target="#tab-approved" type="button" role="tab">Préstamos en curso</button>
             </li>
             <li class="nav-item" role="presentation">
-              <button class="nav-link" id="tab-history-pill" data-bs-toggle="pill" data-bs-target="#tab-history" type="button" role="tab">Historial</button>
+              <button class="nav-link" id="tab-history-pill" data-bs-toggle="pill" data-bs-target="#tab-history" type="button" role="tab">Historial de préstamos</button>
             </li>
           </ul>
           <div class="tab-content mt-4">
@@ -393,6 +444,82 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // --- Modal préstamo físico ---
+      const addPhysicalLoanBtn = document.getElementById('addPhysicalLoanBtn');
+      const physicalLoanModal = document.getElementById('physicalLoanModal');
+      const physicalLoanForm = document.getElementById('physicalLoanForm');
+      const loanBookInput = document.getElementById('loanBookInput');
+      const librosList = document.getElementById('librosList');
+      const loanBookIdHidden = document.getElementById('loanBookIdHidden');
+      let physicalLoanModalInstance = null;
+      if (physicalLoanModal && window.bootstrap) {
+        physicalLoanModalInstance = new bootstrap.Modal(physicalLoanModal);
+      }
+      if (addPhysicalLoanBtn && physicalLoanModalInstance) {
+        addPhysicalLoanBtn.addEventListener('click', () => {
+          // Poblar datalist de libros físicos
+          librosList.innerHTML = '';
+          (state.books || []).filter(b => (b.tipo || '').toLowerCase() === 'fisico').forEach(book => {
+            const opt = document.createElement('option');
+            opt.value = `${book.titulo} (${book.autor})`;
+            opt.dataset.id = book.id;
+            librosList.appendChild(opt);
+          });
+          loanBookInput.value = '';
+          loanBookIdHidden.value = '';
+          physicalLoanForm.reset();
+          physicalLoanModalInstance.show();
+        });
+        // Asociar el ID al campo oculto al seleccionar un libro
+        loanBookInput?.addEventListener('input', () => {
+          const val = loanBookInput.value;
+          let found = false;
+          for (const opt of librosList.options) {
+            if (opt.value === val) {
+              loanBookIdHidden.value = opt.dataset.id || '';
+              found = true;
+              break;
+            }
+          }
+          if (!found) loanBookIdHidden.value = '';
+        });
+      }
+
+      // Enviar datos del préstamo físico al backend
+      if (physicalLoanForm) {
+        physicalLoanForm.addEventListener('submit', async function(event) {
+          event.preventDefault();
+          const formData = new FormData(physicalLoanForm);
+          const payload = {
+            book_id: formData.get('book_id'),
+            nombre: formData.get('nombre'),
+            rut: formData.get('rut'),
+            telefono: formData.get('telefono'),
+            email: formData.get('email'),
+            due_date: formData.get('due_date'),
+            status: 'recogido' // Se registra como recogido directamente
+          };
+          // Validación básica
+          if (!payload.book_id || !payload.nombre || !payload.rut || !payload.telefono || !payload.due_date) {
+            showToast('Completa todos los campos obligatorios', 'danger');
+            return;
+          }
+          try {
+            await fetchJson('/api/admin/requests', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            showToast('Préstamo físico registrado');
+            physicalLoanModalInstance.hide();
+            loadDashboard();
+          } catch (error) {
+            showToast(error.message || 'No se pudo registrar el préstamo', 'danger');
+          }
+        });
+      }
+    </script>
   <script>
     const ADMIN_TOKEN_KEY = 'admin_token';
 
@@ -404,7 +531,9 @@
     }
 
     const adminToken = localStorage.getItem(ADMIN_TOKEN_KEY);
+    console.log('[admin-panel] Token leído de localStorage:', adminToken);
     if (!adminToken) {
+      console.warn('[admin-panel] No hay token en localStorage, redirigiendo a login');
       window.location.href = buildLoginUrl();
     }
 
@@ -496,7 +625,12 @@
 
     function withAuth(options = {}) {
       const headers = new Headers(options.headers || {});
-      if (adminToken) headers.set('Authorization', `Bearer ${adminToken}`);
+      if (adminToken) {
+        headers.set('Authorization', `Bearer ${adminToken}`);
+        console.log('[admin-panel] Enviando Authorization:', headers.get('Authorization'));
+      } else {
+        console.warn('[admin-panel] No se envía Authorization porque no hay token');
+      }
       return { ...options, headers };
     }
 
@@ -811,30 +945,33 @@
         return;
       }
       const latest = [...state.books].slice(-6).reverse();
-      elements.booksGrid.innerHTML = latest.map(book => {
-        const id = Number(book.id);
-        const tipo = escapeHtml(book.tipo || 'digital');
-        const titulo = escapeHtml(book.titulo || 'Sin título');
-        const autor = escapeHtml(book.autor || 'Autor no disponible');
-        const descripcion = escapeHtml(book.descripcion || '');
-        const genero = escapeHtml(book.genero || 'varios');
-        return `
-        <div class="col-12 col-md-6">
-          <div class="border rounded-4 p-3 h-100 d-flex flex-column">
-            <div>
-              <p class="text-uppercase small text-muted mb-1">${tipo}</p>
-              <h3 class="h6 mb-1">${titulo}</h3>
-              <p class="mb-1 text-muted">${autor}</p>
-              <p class="small text-muted mb-2">${descripcion}</p>
-              <span class="badge bg-light text-dark">${genero}</span>
-            </div>
-            <div class="mt-3 d-flex flex-wrap gap-2">
-              <button class="btn btn-sm btn-outline-primary" type="button" data-action="edit-book" data-id="${id}"><i class="bi bi-pencil me-1"></i>Editar</button>
-              <button class="btn btn-sm btn-outline-danger" type="button" data-action="delete-book" data-id="${id}"><i class="bi bi-trash me-1"></i>Eliminar</button>
-            </div>
-          </div>
-        </div>`;
-      }).join('');
+      elements.booksGrid.innerHTML = `
+        <ul class="list-group list-group-flush w-100">
+          ${latest.map(book => {
+            const id = Number(book.id);
+            const tipo = escapeHtml(book.tipo || 'digital');
+            const titulo = escapeHtml(book.titulo || 'Sin título');
+            const autor = escapeHtml(book.autor || 'Autor no disponible');
+            const descripcion = escapeHtml(book.descripcion || '');
+            const genero = escapeHtml(book.genero || 'varios');
+            return `
+              <li class="list-group-item d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 py-3">
+                <div class="flex-grow-1">
+                  <span class="badge bg-light text-dark me-2">${tipo}</span>
+                  <span class="fw-semibold">${titulo}</span>
+                  <span class="text-muted ms-2">${autor}</span>
+                  <div class="small text-muted mt-1">${descripcion}</div>
+                  <span class="badge bg-secondary ms-1">${genero}</span>
+                </div>
+                <div class="d-flex flex-wrap gap-2 mt-2 mt-md-0">
+                  <button class="btn btn-sm btn-outline-primary" type="button" data-action="edit-book" data-id="${id}"><i class="bi bi-pencil me-1"></i>Editar</button>
+                  <button class="btn btn-sm btn-outline-danger" type="button" data-action="delete-book" data-id="${id}"><i class="bi bi-trash me-1"></i>Eliminar</button>
+                </div>
+              </li>
+            `;
+          }).join('')}
+        </ul>
+      `;
     }
 
     function renderLogs() {

@@ -1396,7 +1396,15 @@
         state.pdfDoc = await loadingTask.promise;
         state.totalPages = state.pdfDoc.numPages;
         const progress = await loadProgress(state.libroId);
-        if (progress?.currentPage) {
+        // Permitir continuar desde la página guardada si existe en localStorage
+        let continuePage = null;
+        try {
+          continuePage = Number(localStorage.getItem('continuePage'));
+        } catch {}
+        if (continuePage && !isNaN(continuePage)) {
+          state.pageNum = clamp(continuePage, 1, state.totalPages);
+          localStorage.removeItem('continuePage');
+        } else if (progress?.currentPage) {
           state.pageNum = clamp(progress.currentPage, 1, state.totalPages);
         }
         state.baseScale = null;
