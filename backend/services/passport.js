@@ -18,19 +18,9 @@ function registerGoogleStrategy(passport, strategyName, options = {}) {
       let user = await findPgUserByEmail(email);
       const now = new Date();
 
+      // SOLO permitir login si el usuario ya existe en la base de datos
       if (!user) {
-        if (requireRoles && requireRoles.length) {
-          return done(null, false, { message: 'Cuenta no autorizada.' });
-        }
-        user = await createPgUser({
-          nombre: profile.displayName || 'Usuario Google',
-          rut: profile.id || email,
-          email,
-          password: profile.id || email,
-          role: ensureRoleArray(defaultRoles),
-          last_login: now,
-          created_at: now
-        });
+        return done(null, false, { message: 'Cuenta no registrada. Solicite acceso al administrador.' });
       } else {
         // Actualizar roles y last_login si corresponde
         user.role = ensureRoleArray(user.role || user.roles || defaultRoles);
