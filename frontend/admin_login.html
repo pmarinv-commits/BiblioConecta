@@ -87,15 +87,6 @@
         <span class="fw-semibold">Ingresar</span>
       </button>
     </form>
-    <div class="d-flex align-items-center mb-3">
-      <div class="flex-grow-1 border-top"></div>
-      <span class="px-3 text-muted small">o</span>
-      <div class="flex-grow-1 border-top"></div>
-    </div>
-    <button class="google-btn w-100" id="googleButton" type="button">
-      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="18" height="18" />
-      <span>Continuar con Google</span>
-    </button>
     <p class="text-center text-muted small mt-4 mb-0">Esta puerta es exclusiva para administradores autorizados.</p>
   </div>
 
@@ -133,8 +124,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       const adminForm = document.getElementById('adminLoginForm');
       const alertBox = document.getElementById('adminAlert');
-      const googleBtn = document.getElementById('googleButton');
-      if (!adminForm || !alertBox || !googleBtn) return;
+      if (!adminForm || !alertBox) return;
 
       adminForm.setAttribute('action', 'javascript:void(0);');
       adminForm.setAttribute('novalidate', 'novalidate');
@@ -177,10 +167,6 @@
           alertBox.innerHTML = `<div class=\"alert alert-danger\" role=\"alert\">${error.message}</div>`;
           console.error('[admin-login] Error en login:', error);
         }
-      });
-
-      googleBtn.addEventListener('click', () => {
-        window.location.href = '/api/admin/auth/google';
       });
     });
   </script>
